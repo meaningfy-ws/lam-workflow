@@ -108,6 +108,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+fuseki-data/
+fuseki-fingerprinter-volume/
+
+
 
 # Spyder project settings
 .spyderproject
@@ -126,3 +130,30 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/
+data-dev/
+build/
+
+# projest related
+cucumber_report.json
+junit_report.xml
+*.ldb
+
+# Auxiliary files resulted by latex processing
+*.aux
+*.dvi
+*.lof
+*.lot
+*.bit
+*.idx
+*.glo
+*.bbl
+*.bcf
+*.ilg
+*.toc
+*.ind
+*.out
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
