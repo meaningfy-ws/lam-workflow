@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  rdf-validator-api:
+    container_name: rdf-validator-api
+    image: meaningfy/rdf-validator-api:latest
+    ports:
+      - ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
+    volumes:
+      - rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
+    env_file: .env
+    restart: always
+    networks:
+      - mydefault
+
+  rdf-validator-ui:
+    container_name: rdf-validator-ui
+    image: meaningfy/rdf-validator-ui:latest
+    ports:
+      - ${RDF_VALIDATOR_UI_PORT}:${RDF_VALIDATOR_UI_PORT}
+    env_file: .env
+    restart: always
+    depends_on:
+      - "rdf-validator-api"
+    networks:
+      - mydefault
+
+volumes:
+  rdf-validator-shacl-shapes:
+    external: true
+
+networks:
+  mydefault:
