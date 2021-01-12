@@ -1,0 +1,36 @@
+\section{Introduction}
+\label{sec:introduction}	
+    
+    This document describes the installation and configuration procedures along with stating the scope, target audience and introducing briefly the Docker technology.
+    
+\section{Scope}
+\label{sec:scope}
+
+	This document aims at covering the installation and configuration instructions for the suite of the following software services:
+	
+	\begin{enumerate}
+		\item RDF validator
+	\end{enumerate}
+
+\section{Target audience}
+\label{sec:audience}
+	
+	The target audience for this document comprises the following groups and stakeholders:	
+	\begin{itemize}
+		\item System administrators
+		\item Developers in charge
+	\end{itemize}	
+		
+\section{Technology background}
+\label{sec:background}
+
+	Infrastructure and deployment configuration rely on the \textit{Docker technology} \citep{docker-merkel2014docker, docker}. Docker is a set of platform as a service (PaaS) products that use OS-level virtualisation to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels. All containers are run by a single operating system kernel and therefore collectively, use fewer resources than virtual machines.
+
+	Docker technology is chosen because it solves the problem known in the system administration world as the ``dependency hell'', which refers to three specific issues: conflicting dependencies, missing dependencies, and platform differences.
+
+	Docker solved these issues by providing the means for imagines to package an application along with all of its dependencies easily and then run it smoothly in disparate development, test and production
+environments.
+		
+	\textit{Docker Compose} is a tool for defining and running multi-container Docker applications or application suites. It uses YAML files to configure the application's services and performs the creation and start-up and shutdown process of all the containers with a single command. The docker-compose command line interface (CLI) utility allows users to run commands on multiple containers at once, for example, building images, scaling containers, running containers that were stopped, and more. Commands related to image manipulation, or user-interactive options, are not relevant in Docker Compose because they address one container. The \textit{docker-compose.yml} file is used to define an application's services and includes various configuration options.
+
+	The services and applications enumerated in Section \ref{sec:scope} are packaged into Docker images. The associated docker-compose.yml file defines the suite of applications and micro-service configurations in order to be deployed and ran together with ease. This manual explains how to run and configure this suite of Docker containers using Docker Compose tool.

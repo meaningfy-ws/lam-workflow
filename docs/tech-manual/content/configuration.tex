@@ -1,0 +1,91 @@
+\section{Configuration}
+\label{sec:configuration}
+The deployment suite of micro-services is defined docker-compose.yml file. At deployment and at runtime, the service configurations are provided through OS environment variables available in the \textit{.env} file. The role of the .env file is to enable the system administrators to easily change default configurations as necessary in the context of their environment.
+
+The suite of micro-services is built, started and shut down via docker-compose, a tool designed especially for managing multi-container Docker applications, by describing them in a single file. Then, with a single command, you create and build, start or stop all the services using that configuration file.
+
+In order to avoid hard coding parameters, docker-compose allows you to define them externally. You have the option to define them as operating system level environment variables or provide them in a single file, which is passed as a parameter to the docker-compose tool using the \textit{--env-file} command line argument. Having them in a single file makes much more sense and it is more pragmatic, as you can see and manage all parameters in one place, add the file to the version control system (the contents of the file will evolve and be in sync with the actual code) and have different files for different environments.
+
+The file is usually named \textit{.env} and contains all of the parameters that you want to be able to change and that you need to build and run the defined containers.
+
+Having the parameters in an \textit{.env} file is very useful in a multitude of scenarios, where you would want to have different configurations for different environments where you might want to deploy. As a more specific example, consider a continuous delivery pipeline and the URLs and ports you want your containers to bind (or to connect) to. You thus can easily have two \textit{.env} files, one named \textit{test.env} and one named \textit{acceptance.env}. Each file would have the same declared variables, but with different values for each of the continuous delivery pipeline stage where it’s being deployed. The benefit is that you deploy and test/use the same containers/artifacts and are able to configure them, on the spot, according to the environment that they are integrated with.
+
+
+Let’s take, for example, the RDF Differ user interface Docker container, which is defined, in the \texttt{docker-compose.yml} file as it follows:
+\begin{lstlisting}[]
+rdf-validator-api:
+	container_name: rdf-validator-api
+	image: meaningfy/rdf-validator-api:latest
+	ports:
+		- ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
+	volumes:
+		- rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
+	env_file: .env
+	restart: always
+	networks:
+		- mydefault
+\end{lstlisting}
+The variable used in the definition of this service is just one, \texttt{RDF\_VALIDATOR\_API\_PORT}. And the place where docker-compose will look for that variable is specified in the \texttt{env\_file: .env} line.
+
+Now, if you look in the “.env” file, you will quickly see that the variable is defined as \texttt{RDF\_VALIDATOR\_UI\_PORT=4010}. Change the value of the port, rebuild the micro-services and RDF Differ will no longer be listening on 4010, but on the new port that you specified.
+
+
+This section describes the important configurations options available for each of the services.
+
+
+\subsection{RDF validator}
+
+RDF validator application exposes an API and an UI and does not depend on any additional services as everything is encapsulated into the Docker image. The configuration options are summarised below.
+
+\begin{longtable}[c]{@{}p{4cm}p{5cm}l@{}}
+	\toprule
+	Description           & Value                   & Associated variable                   \\* \midrule
+	\endfirsthead
+	%
+	\multicolumn{3}{c}%
+	{{\bfseries Table \thetable\ continued from previous page}}                             \\
+	\endhead
+	%
+	\bottomrule
+	\endfoot
+	%
+	\endlastfoot
+	%
+	Service UI port       & 8010                    & \texttt{VALIDATOR\_UI\_PORT}          \\
+	Validator UI location & http://rdf-validator-ui & \texttt{RDF\_VALIDATOR\_UI\_LOCATION} \\
+	Service API port      & 4010                    & \texttt{VALIDATOR\_API\_PORT}         \\
+	Validator API location & http://rdf-validator-api & \texttt{RDF\_VALIDATOR\_API\_LOCATION} \\* \bottomrule
+	\caption{RDF validator configurations}
+	\label{tab:my-table3}                                                                   \\
+\end{longtable}
+
+Note, when validating SPARQL endpoints, the fully qualified domain name of the machine must be specified. As a consequence, ``localhost'' domain will not work as expected.
+
+\subsubsection{Configure SHACL Shapes Files}
+\label{sec:rdf-validator-ss}
+The custom SHACL Shapes files functionality is implemented using \textbf{\href{https://docs.docker.com/storage/volumes/}{docker's volumes}} mechanism. This implementation has been chosen as it requires no code modifications from the end-user's side.
+
+An externally defined volume \texttt{rdf-validator-shacl-shapes} which will contain the custom files, which in turn is coupled with the \texttt{rdf-validator-api} docker container to use when validating.  The coupling of the volume to the service container is done with the following statement, which is included in the default docker compose configuration.
+
+\begin{lstlisting}[]
+volumes:
+- rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
+\end{lstlisting}
+
+\texttt{RDF\_VALIDATOR\_SHACL\_SPHAPES\_LOCATION} is an environment variable used in the internal implementation of the \texttt{rdf-validator} service.
+
+The lines above map the custom shapes that have been copied to the docker volume with the internal location of the container which has been defined in the \texttt{.env} file.
+
+To make the custom shapes available to the container run the \texttt{make} command, indicating the location of your shapes through the \texttt{location} variable.
+\begin{lstlisting}[language=bash]
+make location=<location to shapes> validator-set-shacl-shapes
+\end{lstlisting}
+
+\textbf{NOTE}: Make sure that the location specified ends with a trailing slash \texttt{/}, otherwise the command will not work propery and the templates will not be copied to the docker volume.
+
+Example:
+\begin{lstlisting}[language=bash]
+make location=~/shapes/location/ validator-set-shacl-shapes
+	\end{lstlisting}
+
+After this, restart the \texttt{rdf-validator-api} container for the effects to take place.
