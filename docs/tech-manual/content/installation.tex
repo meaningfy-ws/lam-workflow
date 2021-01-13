@@ -1,7 +1,7 @@
 \section{Requirements}
 \label{sec:requirements}
 
-Although Docker can be executed on any platform, for performance and security reasons we recommend using a Linux OS with kernel version 5.4x or higher. The services have been tested on Ubuntu 20 server.
+Although Docker can be executed on any platform, for performance and security reasons we recommend using a Linux OS with kernel version 5.4.x or higher. The services have been tested on Ubuntu 20 server.
 
 There is a range of ports that must be available on the host machine as they will be bound to by different docker services. Although the system administrator may choose to change them by changing the values in of specific environment variables. The inventory of pre-configured ports is provided in Table \ref{tab:port-inventory}.
 
@@ -27,16 +27,16 @@ There is a range of ports that must be available on the host machine as they wil
 %	\vfil
 The minimal hardware requirements are as follows
 \begin{enumerate}
-	\item CPU: ???
-	\item RAM: ???
-	\item SDD system: ???
-	\item SDD data: ???
+	\item CPU: Dual core 3Ghz
+	\item RAM: 8Gb
+	\item SDD system: 2Gb
+	\item SDD data: 8Gb 
 \end{enumerate}
 
 \section{Installation}
 \label{sec:installation}
 
-In order to run the services it is necessary to have Docker server and docker-compose tool installed. To install them following the instructions provided at the following locations
+In order to run the services it is necessary to have Docker \citep{docker} service and docker-compose tool installed. To install them follow the instructions provided on the official websites
 
 \begin{enumerate}
 	\item Docker - \url{https://docs.docker.com/engine/install}
@@ -50,16 +50,28 @@ sudo apt -y install docker.io docker-compose git make
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
-	\end{lstlisting}
+\end{lstlisting}
 
-Next, clone the Git repository containing the \textit{docker-compose.yml}, \textit{.env} file and the \textit{Makefile}.
+Please note that the \textit{docker.io} package si installed rather than the \textit{docker-ce} one.
+
+Next, to launch the services, clone the Git repository containing the \textit{docker-compose.yml}, \textit{.env} file and the \textit{Makefile}. 
 
 \begin{lstlisting}[language=bash,]
 git clone https://github.com/meaningfy-ws/lam-workflow.git
 cd lam-workflow
 \end{lstlisting}
 
-Then change directory into the \textit{lam-workflow} folder and Makefile commands to start and stop services will be available.
+You may choose to adjust these files as necessary on your system. Then change directory into the \textit{lam-workflow} folder and Makefile commands to start and stop services will be available. To start services run
+
+\begin{lstlisting}[language=bash,]
+make start-services
+\end{lstlisting}
+
+To stop the services run 
+
+\begin{lstlisting}[language=bash,]
+make stop-services
+\end{lstlisting}
 
 Downloading the Docker images will be triggered automatically on first request to start the services.
 
