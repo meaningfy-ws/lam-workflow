@@ -1,0 +1,102 @@
+\section{Requirements}
+\label{sec:requirements}
+
+Although Docker can be executed on any platform, for performance and security reasons we recommend using a Linux OS with kernel version 5.4x or higher. The services have been tested on Ubuntu 20 server.
+
+There is a range of ports that must be available on the host machine as they will be bound to by different docker services. Although the system administrator may choose to change them by changing the values in of specific environment variables. The inventory of pre-configured ports is provided in Table \ref{tab:port-inventory}.
+
+\begin{longtable}[c]{@{}p{3.64cm}p{1.25cm}p{1.25cm}p{1.9cm}p{5cm}@{}}
+	\toprule
+	Service name  & HTTP port UI & HTTP port API & FTP port & Mounted volume \\* \midrule
+	\endfirsthead
+	%
+	\multicolumn{5}{c}%
+	{{\bfseries Table \thetable\ continued from previous page}}              \\
+	\endhead
+	%
+	\bottomrule
+	\endfoot
+	%
+	\endlastfoot
+	%
+	RDF validator & 8010         & 4010          &          &                \\* \hline
+	\caption{Port usage inventory}
+	\label{tab:port-inventory}                                               \\
+\end{longtable}
+
+%	\vfil
+The minimal hardware requirements are as follows
+\begin{enumerate}
+	\item CPU: ???
+	\item RAM: ???
+	\item SDD system: ???
+	\item SDD data: ???
+\end{enumerate}
+
+\section{Installation}
+\label{sec:installation}
+
+In order to run the services it is necessary to have Docker server and docker-compose tool installed. To install them following the instructions provided at the following locations
+
+\begin{enumerate}
+	\item Docker - \url{https://docs.docker.com/engine/install}
+	\item Docker Compose - \url{https://docs.docker.com/compose/install}
+\end{enumerate}
+
+In case you are using Debian-like OS such as Ubuntu, you may simply run the following Bash commands to install and set the appropriate permissions.
+
+\begin{lstlisting}[language=bash,]
+sudo apt -y install docker.io docker-compose git make
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+	\end{lstlisting}
+
+Next, clone the Git repository containing the \textit{docker-compose.yml}, \textit{.env} file and the \textit{Makefile}.
+
+\begin{lstlisting}[language=bash,]
+git clone https://github.com/meaningfy-ws/lam-workflow.git
+cd lam-workflow
+\end{lstlisting}
+
+Then change directory into the \textit{lam-workflow} folder and Makefile commands to start and stop services will be available.
+
+Downloading the Docker images will be triggered automatically on first request to start the services.
+
+To start the services using Makefile
+
+\begin{lstlisting}[language=bash,]
+make location=</your-custom/shapes/location> validator-set-shacl-shapes
+make start-services
+\end{lstlisting}
+
+To stop the services using Makefile
+
+\begin{lstlisting}[language=bash,]
+make stop-services
+\end{lstlisting}
+
+To start services without Makefile first prepare the volume with LinkedPipes ETL configurations file like this
+
+\begin{lstlisting}[language=bash,]
+docker rm temp | true
+docker volume rm rdf-validator-shacl-shapes | true
+docker volume create rdf-validator-shacl-shapes
+docker container create --name temp -v rdf-validator-shacl-shapes:/data busybox
+docker cp <your-custom/shapes/location>. temp:/data
+docker rm temp
+\end{lstlisting}
+
+then start the services
+
+\begin{lstlisting}[language=bash,]
+docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d
+\end{lstlisting}
+
+To stop the services run
+
+\begin{lstlisting}[language=bash,]
+docker-compose --file docker/docker-compose.yml --env-file docker/.env down
+\end{lstlisting}
+
+The detailed explanation on how to configure them is provided in the Configuration section for each of these services (See Section \ref{sec:rdf-validator-ss} ).

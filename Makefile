@@ -1,5 +1,4 @@
 build-template-volumes:
-	@ docker volume create rdf-validator-template
 	@ docker volume create rdf-validator-shacl-shapes
 
 validator-set-report-template:
