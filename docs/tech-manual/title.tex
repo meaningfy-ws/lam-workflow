@@ -15,29 +15,34 @@
 }%
 
 % defining the page metadata variables
-\newcommand{\DelTitle}{Installation guide for LAM project}
-\newcommand{\DelNumber}{WP 1.3.8}
+\newcommand{\DelTitle}{Technical manual for the LAM content generation service}
+\newcommand{\DelNumber}{WP 4.1 \& WP 4.2}
 \newcommand{\DelVersion}{1.0}
-\newcommand{\DelCorporateAuthor}{???}
+\newcommand{\DelCorporateAuthor}{Publications Office of the European Union}
 \newcommand{\DelAuthor}{Eugeniu Costetchi}
-\newcommand{\DelReviewer}{???}
-\newcommand{\DelDate}{???}
-\newcommand{\DelInitiative}{???}
+\newcommand{\DelReviewer}{Juraj Kuba, Miltiadis Charitos, Marcin Baryn}
+\newcommand{\DelDate}{19 Feb 2021}
+\newcommand{\DelInitiative}{Initiative for Modeling the Legal Analysis Methodology}
 \newcommand{\DelPreparation}{???}
-\newcommand{\DelReaders}{???}
+\newcommand{\DelReaders}{system administrators, software developers, future users}
 \newcommand{\DelCopyright}{\textsuperscript{\textcopyright} European Union, 2021 }
-
+\newcommand{\DelContractor}{Infeurope}
+\newcommand{\DelFrameworkContract}{FC No 10688/ OF No 36269}
 
 \pagestyle{empty}
-
-
 \begin{titlepage}
 	\begin{center}
 
 		\begin{center}
 			\begin{center}
 				\setlength{\tabcolsep}{0pt}
-				\includegraphics[width=0.35\linewidth]{images/logos/EU-OP.png}
+				
+				\begin{tabular}{>{\raggedleft}m{3.5cm}>{\centering}m{\dimexpr\textwidth - 8cm\relax}>{\raggedright}m{3.5cm}}
+					\includegraphics[width=1.5\linewidth]{images/logos/EU-OP.png}	
+					&%
+					&%
+					\includegraphics[width=\linewidth]{images/logos/infeurope-blue-logo} %
+				\end{tabular}
 			\end{center}
 
 			\ThisLRCornerWallPaper{1}{images/background}
@@ -73,9 +78,10 @@
 
 \clearpage
 
-\vspace*{\fill}
+%\vspace*{\fill}
 
-\textbf{\footnotesize \DelPreparation}
+%\textbf{\footnotesize \DelPreparation}
+\input{disclaimer}
 
 \begin{flushleft}
 	\begin{table*}[!b]
@@ -86,8 +92,8 @@
 			\textbf{Corporate Author}   & \DelCorporateAuthor   \\
 			\textbf{Author}             & \DelAuthor            \\
 			\textbf{Reviewers}          & \DelReviewer          \\
-			\textbf{Contractor}         & ???        \\
-			\textbf{Framework contract} & ???           \\
+			\textbf{Contractor}         & \DelContractor        \\
+			\textbf{Framework contract} & \DelFrameworkContract\\
 			\textbf{Work package}       & \DelNumber            \\
 			\textbf{Delivery date}      & \DelDate              \\
 			\textbf{Suggested readers}  & \DelReaders           \\

@@ -1,6 +1,14 @@
 \section{Introduction}
 \label{sec:introduction}	
+       
+   	This document provides technical guidance on how to install and configure LAM Validator and LAM content generator, two micro-services developed in the context of the initiative for modelling the Legal Analysis Methodology (LAM). 
     
+    The LAM validator is used to perform validation of RDF content after it is exported from VocBench 3 platform. The validation procedure is based on SHACL data shape checking and is done using LAM-SKOS-AP application profile. 
+    
+    The LAM content generator is used to generate, from valid RDF files, the HTML representation, PDF representation and index files in JSON representation. 	
+
+	The employed infrastructure technology for the micro-service management is based on Docker introduced in Section \ref{sec:background}.
+	    
     This document describes the installation and configuration procedures along with stating the scope, target audience and introducing briefly the Docker technology.
     
 \section{Scope}
@@ -9,7 +17,8 @@
 	This document aims at covering the installation and configuration instructions for the suite of the following software services:
 	
 	\begin{enumerate}
-		\item RDF validator
+		\item LAM RDF validator
+		\item LAM content generator
 	\end{enumerate}
 
 \section{Target audience}
@@ -19,6 +28,7 @@
 	\begin{itemize}
 		\item System administrators
 		\item Developers in charge
+		\item Technical users 
 	\end{itemize}	
 		
 \section{Technology background}
@@ -28,8 +38,7 @@
 
 	Docker technology is chosen because it solves the problem known in the system administration world as the ``dependency hell'', which refers to three specific issues: conflicting dependencies, missing dependencies, and platform differences.
 
-	Docker solved these issues by providing the means for imagines to package an application along with all of its dependencies easily and then run it smoothly in disparate development, test and production
-environments.
+	Docker solved these issues by providing the means for imagines to package an application along with all of its dependencies easily and then run it smoothly in disparate development, test and production environments.
 		
 	\textit{Docker Compose} is a tool for defining and running multi-container Docker applications or application suites. It uses YAML files to configure the application's services and performs the creation and start-up and shutdown process of all the containers with a single command. The docker-compose command line interface (CLI) utility allows users to run commands on multiple containers at once, for example, building images, scaling containers, running containers that were stopped, and more. Commands related to image manipulation, or user-interactive options, are not relevant in Docker Compose because they address one container. The \textit{docker-compose.yml} file is used to define an application's services and includes various configuration options.
 
