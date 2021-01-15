@@ -1,0 +1,64 @@
+\chapter{Conclusions}
+\label{sec:conclusions}
+	
+	This document presented the architectural stance for the asset publication life-cycle as it's currently employed by the SU and as we recommend it to become.
+	
+	Through the development of this architecture we bring clarity to the SU management of who are the main stakeholders, what their interests and drivers are and what issues and solutions are associated to those motivations. Also we explicitly describe the internal processes, events and roles answering questions concerning who shall do what and when. Valuable especially for the technical staff is the application architecture which answers the questions about what application service and capability supports which process in the asset publishing life-cycle, and infrastructure related questions of what components are deployed in which nodes and how they communicate between each other. 
+    % 	key takeaway, the new architecture
+	
+	This document constitutes a way to move forward with the digital transformation of the SU given its current interinstitutional context, management goals and demands from third parties.
+	
+	We aim to guide transitions in the asset source representation from the current XML-based source towards a new RDF-based source. 
+	
+    The data quality is addressed in the current architecture through introduction of manual and automatic verification and validation steps operating at both the level of form and meaning.
+    
+    This architecture sets the trend for modernisation of the currently employed application. It is not, however, addressing the entire digital transformation in order to prevent disruption in the current production system. Rather a part of the application is foreseen to evolve, specifically the part responsible for editing the asset content (VocBench3 is already operational), and the rest can be addressed in a subsequent step as a natural followup. 
+	
+	This architecture reorganises the business processes aiming to optimise process workflow reducing the bottlenecks and increasing the speed of the overall life-cycle process. The aim is to achieve the performance of ``overnight publications''. 
+
+	\section{Summary}
+	We presented in Section \ref{sec:context} the context of the current work given by the EU decisions and directives towards the semantic web technologies, open data and digital re-use of public sector information, along with implementation of a single digital gateway. The description of the state of play sets the baseline technical assessment which is extended by a recommendation of a joint trend towards the semantic web technologies and service oriented architecture.
+	
+	The architecture proposed here consists of four layers: motivation in Section \ref{sec:motivation-architecture}, business in Section \ref{sec:business-use cases} and \ref{sec:business-architecture}, application in Section \ref{sec:application-architecture} and technology in \ref{sec:technology-architecture}. And we finally conclude with this section.
+	
+	\section{Limitations and future work}
+	
+	It would be highly valuable to adopt internally in the SU but also in a broader context a data governance policy. For that additional roles would have to adopted in the organisation, a set of policies and reports enforced and some measurement and indicator measurement capabilities implemented. 
+	
+	The new components necessary for the new application life-cycle should be described in terms of functional and non functional requirements, design choices and technologies to be adopted, and are outside the scope of this document. This is an essential input for the software development team which will deal with the implementation of those software components. 
+	
+	The new components that should be developed in order to support the new application are: RDF validation service, RDF fingerprinting service, RDF diffing service, RDF based impact assessment service, report generation service, and asset cataloguing and metadata management service. Among the new services shall also be included a document management service, content management service and a workflow management and execution service. 
+	
+	A clear and detailed account of the data structures and data objects that are operated in the application shall be provided. This is important in order to ensure data consistency, validation policies and control the flows between processes. 
+	
+	No technical capabilities are currently foreseen for process execution monitoring, log analysis and performance measurement. This constitutes a valuable technical capability for both clearly diagnosing and responding in an agile manner to a situation, and long term observations and derivation of optimisation insights.
+	
+    \section{Final word}
+    In this document we propose the first step towards a modern enterprise-level application that streamlines the process of asset publication life-cycle forth both the internal staff of the SU and for external partners involved in the process. 
+    
+    We envisage a service oriented and semantically enriched system that operates in a cloud infrastructure and provides seamless experience to all involved parties in performing their duties and responsibilities in a  coordinated asset publishing process. Such a system can constitute a cornerstone for management, publication and dissemination of public sector reference data bringing the single digital gateway one step closer to reality. 
+    
+	
+%  Presenting the last word on the issues you raised in your paper. Just as the introduction gives a first impression to your reader, the conclusion offers a chance to leave a lasting impression. We do this, for example, by highlighting key points in the analysis and findings.
+ 
+%  Summarizing your thoughts and conveying the larger implications of your study. The conclusion is an opportunity to succinctly answer the "so what?" question by placing the study within the context of past research about the topic you've investigated.
+ 
+%  Demonstrating the importance of your ideas. Don't be shy. The conclusion offers you a chance to elaborate on the significance of your findings.
+ 
+%  Introducing possible new or expanded ways of thinking about the research problem. This does not refer to introducing new information [which should be avoided], but to offer new insight and creative approaches for framing/contextualizing the research problem based on the results of your study.
+ 
+%  Move towards becoming a data centric organisation
+%  Adopt a data governance strategy; implement data steward and data custodian roles; training and clear communication in place
+ 
+%  Extend the enterprise architecture thinking: fully assess and document motivations and develop a strategy (i.e. include EC vision, EU Directives, data governance initiative, etc.); asses and document in detail who are the main classes of clients and stakeholders; fully assess and document the currently provided services and those needed or requested by clients but not yet implemented; asses and document the technological capabilities and resources necessary to fulfill the service provisions; develop an implementation strategy to move from current state of affairs sto the desired one.
+ 
+%  Adopt/implement a monitoring system (technical and business); further extend it with measurements of performance indicators
+ 
+%  Further develop missing services and and increase integration and harmonisation of the employed micro services into a holistic reference data management system
+ 
+%  Asses the current state of the reference data assets; their structure and content; implement/define clear model for each dataset 
+ 
+%  Clean up the datasets to provide internal consistency 
+ 
+
+ 

@@ -1,0 +1,57 @@
+\chapter{Introduction}
+\label{sec:introduction}
+	
+	This document provides a working definition of the architectural stance and design decisions that are to be adopted for the asset publication life-cycle process. This process is materialised as the publication workflow and is currently employed by the Standardisation Unit (SU) at the Publications Office of the European Union (PO).
+	
+	In this document we (a) establish the baseline architecture, supported by  strategic and motivational information; and (b) develop a target architecture guiding the digital transformation processes towards new technologies. This constitutes a natural evolution in response to changing mission needs defined by SU management, and also takes into consideration the strategic directions proposed by the PO, the European Commission (EC) and the European Parliament (EP) as presented below.
+	
+	\section{Background considerations}
+	
+	Given the increasing importance of data standards for the EU institutions, a number of initiatives driven by the public sector, industry and academia have been kick-started in recent years. Some have grown organically, while others are the result of standardisation work. Each of these initiatives introduce specific vocabularies, semantics and technologies, resulting in a heterogeneous state of affairs. These differences hamper data interoperability and thus its reuse by the other institutions or by the wider public. This creates the need for a common approach for publishing public reference data and models. Moreover data, which instantiate these public models, available from different sources shall be easily accessed, linked, and consequently reused.
+	
+	%  involving interinstitutional information exchange schemes, shared models, ontologies and controlled vocabularies
+	
+	The PSI directive \cite{directive-2019/1024} across the EU calls for open, unobstructed access to public data in order to improve transparency and to boost innovation via the reuse of public data. The reference data maintained and published by the OP has been identified as data with a high-reuse potential \cite{d-high-value-assets}. Therefore, making this data available in machine-readable formats, as well as following the data as a service paradigm, are required in order to maximise its reuse.
+	
+	In this context, the Publications Office of the European Union maintains and publishes an ever-increasing number of \textit{reference data} which are vital in the context of inter-institutional information exchange. With regards to reference data, the OP provides an ever-increasing number of services to the main institutional stakeholders and with the aim to extend them to a broader public, enabling active or passive participation in the reference data life cycle, standardisation and harmonisation.
+
+	\section{EU trajectory towards public sector linked open data}
+	
+	European institutions started out to adopt Semantic Web and Linked Data technologies as part of their visions to become data-centred e-government bodies \citep{decission-456/2005/EC,decission-2015/2240}. 
+	
+	The EU institutions also aim for implementation of a single digital gateway to ``facilitate interactions between citizens and businesses, on the one hand, and competent authorities, on the other hand, by providing access to online solutions, facilitating the day-to-day activities of citizens and businesses and minimising the obstacles encountered in the internal market. The existence of a single digital gateway providing online access to accurate and up-to-date information, to procedures and to assistance and problem-solving services could help raise the users' awareness of the different existing online services and could save them time and expense'' \citep{directive-2018/1724}. This is well in line with earlier established goals for encouraging the open data and the re-use of public sector information \citep{directive-2013/37/EU,directive-2019/1024}.
+
+	Many of the legacy systems used in the EU institutions use XML data format for exchange and document formats governed by the XSD schemes \citep{xsd1.1-spec}. The aim is to evolve technologically so that both existing and new systems are capable to operate with semantic data representations using RDF \citep{rdf11}, OWL \citep{owl2.0,owl2}, SHACL \citep{shacl-spec} and other representations, and serialised at least in RDF/XML \citep{rdf-xml-Beckett:04:RSS,rdf-xml-Schreiber:14:RXS}, Turtle \citep{turtle-Carothers:14:RT} and JSON-LD \citep{spornyjson,sporny2014json} formats.
+	
+	For this reason, the OP has already been publishing data in RDF format for over a decade using the Cellar repository \citep{cdm-francesconi2015ontology}. Also, the SU, in particular, is committed to publish and disseminate reference data in semantic formats. 
+	
+	%Next we outline the state of affairs of the SU to describe the context of the current work. 
+	
+	\section{Target audience}
+	\label{sec:audience}
+	The target audience for this document comprises the following groups and stakeholders:	
+	\begin{itemize}
+		\item Management of the SU
+		\item Enterprise architects and data governance specialists
+		\item Documentalists involved in the reference data life-cycle
+		\item Technical staff in charge of operating workflow components
+		\item Developers in charge of workflow and component implementation
+		\item Third parties using the SU services and data in charge of harmonisation and standardisation of metadata and processes
+	\end{itemize}	
+	
+	\section{Document scope}
+	\label{sec:scope}
+	
+	This document aims to support SU in the transition towards semantic technologies with a particular focus on the architecture of the publication workflow. 
+	
+	The central use case is to support the asset publication life-cycle detailed in Section \ref{sec:lifecycle-current-stages}. This includes managing the incoming requests, editing the reference assets in VocBench3 system \citep{stellato2017towards,stellatovocbench}, then exporting the RDF data and passing them as input to a set of processes that validate, assess, transform, package and finally publish the assets in Cellar \cite{cdm-francesconi2015ontology}, the semantic repository, which is the main dissemination platform. This use case has been broken down into sub-use cases that are detailed in Section \ref{sec:business-use cases}.
+	
+	This architecture is also focused on the transition from XML-based asset sources representation to the RDF-based representation along with the resulting implications. This change has a considerable impact on how the asset lifecycle is organised. 
+	
+	This document will provide a motivational, business and application account of the asset life-cycle workflow. Each of these accounts is limited strictly to the success scenario of the above-mentioned use case and does not include possible extensions and variations.	
+	
+	There is a series of aspects that were intentionally left out out scope. For example the recommendations related to the data governance both internally within the SU and also externally in relation with partners, stakeholders and clients are not covered. Also, no implementation details are specified for the new components. Little or not account is provided about the data structures and static objects used in the business process or exchanged between the application services. No monitoring or performance measurement systems are foreseen by this architecture, which, in future work shall be considered across across all architectural levels: starting from motivation level key performance indicators (KPI), through business level process monitoring, down to performance measurement of the applications and the infrastructure indicators. 
+	
+	A high level treatment with only a few details are provided on how the new impact assessment module shall be implemented; how the workflow orchestration engine shall be configured, what process automation service to use, or what technologies could be chosen for that. Such decisions shall be carried out in subsequent steps as additional discussions need to be conducted with the technical team, business team and the sector management. No asset inventory and metadata management system is proposed either, but these needs are only identified as missing and necessary in Section \ref{sec:implementation-application}.
+	
+	With this scope in mind, we present in the next section what is the general direction that the digital transformation shall take and what is the starting point for it, given the business and technical state of play. 
