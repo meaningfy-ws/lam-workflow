@@ -157,3 +157,6 @@ junit_report.xml
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+
+# Fuseki
+fuseki-lam-volume/

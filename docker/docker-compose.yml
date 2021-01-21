@@ -1,33 +1,64 @@
 version: '3.7'
 
 services:
-  rdf-validator-api:
-    container_name: rdf-validator-api
-    image: meaningfy/rdf-validator-api:latest
+  lam-validator-api:
+    container_name: lam-validator-api
+    image: meaningfy/lam-validator-api:latest
     ports:
       - ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
-    volumes:
-      - rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
     env_file: .env
     restart: always
     networks:
       - mydefault
 
-  rdf-validator-ui:
-    container_name: rdf-validator-ui
-    image: meaningfy/rdf-validator-ui:latest
+  lam-validator-ui:
+    container_name: lam-validator-ui
+    image: meaningfy/lam-validator-ui:latest
     ports:
       - ${RDF_VALIDATOR_UI_PORT}:${RDF_VALIDATOR_UI_PORT}
     env_file: .env
     restart: always
     depends_on:
-      - "rdf-validator-api"
+      - "lam-validator-api"
     networks:
       - mydefault
 
-volumes:
-  rdf-validator-shacl-shapes:
-    external: true
+  lam-generation-service-api:
+    container_name: lam-generation-service-api
+    image: meaningfy/lam-generation-service-api:latest
+    ports:
+      - ${LAM_API_PORT}:${LAM_API_PORT}
+    env_file: .env
+    restart: always
+    networks:
+      - mydefault
+
+  lam-generation-service-ui:
+    container_name: lam-generation-service-ui
+    image: meaningfy/lam-generation-service-ui:latest
+    ports:
+      - ${LAM_UI_PORT}:${LAM_UI_PORT}
+    env_file: .env
+    restart: always
+    depends_on:
+      - "lam-generation-service-api"
+    networks:
+      - mydefault
+
+  fuseki:
+    container_name: lam-fuseki
+    image: meaningfy/fuseki:latest
+    volumes:
+      - ${PWD}/${LAM_FUSEKI_DATA_FOLDER}/fuseki:/fuseki
+    env_file: .env
+    environment:
+      - ADMIN_PASSWORD=${LAM_FUSEKI_ADMIN_PASSWORD}
+      - JVM_ARGS=${LAM_FUSEKI_JVM_ARGS}
+    ports:
+      - ${LAM_FUSEKI_EXTERNAL_PORT}:3030
+    networks:
+      - mydefault
 
 networks:
   mydefault:
+    name: globalnet
