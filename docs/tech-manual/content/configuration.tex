@@ -11,15 +11,13 @@ The file is usually named \textit{.env} and contains all of the parameters that 
 Having the parameters in an \textit{.env} file is very useful in a multitude of scenarios, where you would want to have different configurations for different environments where you might want to deploy. As a more specific example, consider a continuous delivery pipeline and the URLs and ports you want your containers to bind (or to connect) to. You thus can easily have two \textit{.env} files, one named \textit{test.env} and one named \textit{acceptance.env}. Each file would have the same declared variables, but with different values for each of the continuous delivery pipeline stage where it’s being deployed. The benefit is that you deploy and test/use the same containers/artifacts and are able to configure them, on the spot, according to the environment that they are integrated with.
 
 
-Let’s take, for example, the RDF Differ user interface Docker container, which is defined, in the \texttt{docker-compose.yml} file as it follows:
+Let’s take, for example, the RDF Validator API Docker container, which is defined, in the \texttt{docker-compose.yml} file as it follows:
 \begin{lstlisting}[]
-rdf-validator-api:
-	container_name: rdf-validator-api
-	image: meaningfy/rdf-validator-api:latest
+lam-validator-api:
+	container_name: lam-validator-api
+	image: meaningfy/lam-validator-api:latest
 	ports:
 		- ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
-	volumes:
-		- rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
 	env_file: .env
 	restart: always
 	networks:
@@ -27,15 +25,17 @@ rdf-validator-api:
 \end{lstlisting}
 The variable used in the definition of this service is just one, \texttt{RDF\_VALIDATOR\_API\_PORT}. And the place where docker-compose will look for that variable is specified in the \texttt{env\_file: .env} line.
 
-Now, if you look in the “.env” file, you will quickly see that the variable is defined as \texttt{RDF\_VALIDATOR\_UI\_PORT=4010}. Change the value of the port, rebuild the micro-services and RDF Differ will no longer be listening on 4010, but on the new port that you specified.
+Now, if you look in the “.env” file, you will quickly see that the variable is defined as \texttt{RDF\_VALIDATOR\_API\_PORT=10001}. Change the value of the port, rebuild the micro-services and RDF Differ will no longer be listening on \texttt{10001}, but on the new port that you specified.
 
 
 This section describes the important configurations options available for each of the services.
 
 
-\subsection{RDF validator}
+\subsection{LAM Validator}
 
-RDF validator application exposes an API and an UI and does not depend on any additional services as everything is encapsulated into the Docker image. The configuration options are summarised below.
+LAM validator application exposes an API and an UI and does not depend on any additional services as everything is encapsulated into the Docker image. 
+
+The configuration options are summarised below.
 
 \begin{longtable}[c]{@{}p{4cm}p{5cm}l@{}}
 	\toprule
@@ -51,41 +51,116 @@ RDF validator application exposes an API and an UI and does not depend on any ad
 	%
 	\endlastfoot
 	%
-	Service UI port       & 8010                    & \texttt{VALIDATOR\_UI\_PORT}          \\
-	Validator UI location & http://rdf-validator-ui & \texttt{RDF\_VALIDATOR\_UI\_LOCATION} \\
-	Service API port      & 4010                    & \texttt{VALIDATOR\_API\_PORT}         \\
-	Validator API location & http://rdf-validator-api & \texttt{RDF\_VALIDATOR\_API\_LOCATION} \\* \bottomrule
-	\caption{RDF validator configurations}
-	\label{tab:my-table3}                                                                   \\
+	Validator Service UI port           & 10002                             & \texttt{RDF\_VALIDATOR\_UI\_PORT}      \\
+	Validator Service UI location       & http://lam-validator-ui           & \texttt{RDF\_VALIDATOR\_UI\_LOCATION}  \\
+	Validator Service API port          & 10001                             & \texttt{RDF\_VALIDATOR\_API\_PORT}     \\
+	Validator Service API location      & http://lam-validator-api          & \texttt{RDF\_VALIDATOR\_API\_LOCATION} \\
+	\bottomrule
+	\caption{LAM Validator configuration}
+	\label{tab:validator}                                                                   \\
 \end{longtable}
 
 Note, when validating SPARQL endpoints, the fully qualified domain name of the machine must be specified. As a consequence, ``localhost'' domain will not work as expected.
 
 \subsubsection{Configure SHACL Shapes Files}
 \label{sec:rdf-validator-ss}
-The custom SHACL Shapes files functionality is implemented using \textbf{\href{https://docs.docker.com/storage/volumes/}{docker's volumes}} mechanism. This implementation has been chosen as it requires no code modifications from the end-user's side.
+The docker image for the LAM validation API service pulled from \textbf{\href{https://registry.hub.docker.com/r/meaningfy/lam-validator-api}{docker hub}} already contains the required SHACL shape files, as defined in this \textbf{\href{https://github.com/meaningfy-ws/lam-validator/tree/main/resources}{repository}}.
 
-An externally defined volume \texttt{rdf-validator-shacl-shapes} which will contain the custom files, which in turn is coupled with the \texttt{rdf-validator-api} docker container to use when validating.  The coupling of the volume to the service container is done with the following statement, which is included in the default docker compose configuration.
+If you want to change the SHACL shapes files, you can use the following customization implemented using \textbf{\href{https://docs.docker.com/storage/volumes/}{docker's volumes}} mechanism. This implementation has been chosen as it requires no in service code modifications from the end-user's side.
+
+An externally defined volume \texttt{rdf-validator-shacl-shapes} which will contain the custom files is coupled with the \texttt{rdf-validator-api} docker container to use when validating. The coupling of the volume to the service container is done with the following statement, which is not included in the default docker compose configuration.
 
 \begin{lstlisting}[]
 volumes:
 - rdf-validator-shacl-shapes:${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}
 \end{lstlisting}
 
-\texttt{RDF\_VALIDATOR\_SHACL\_SPHAPES\_LOCATION} is an environment variable used in the internal implementation of the \texttt{rdf-validator} service.
-
 The lines above map the custom shapes that have been copied to the docker volume with the internal location of the container which has been defined in the \texttt{.env} file.
 
-To make the custom shapes available to the container run the \texttt{make} command, indicating the location of your shapes through the \texttt{location} variable.
+You have to copy these 2 lines in the \texttt{lam-validator-api} container definition in the \texttt{docker-compose.yml} file after the \texttt{image: meaningfy/lam-validator-api:latest} line.
+
+Additionally, the externally defined volume has to be specified in the \texttt{docker-compose.yml} file:
+\begin{lstlisting}[]
+volumes:
+ rdf-validator-shacl-shapes:
+  external: true
+\end{lstlisting}
+
+To make the custom shapes available to the container create the volume and run the \texttt{make} commands, indicating the location of your shapes through the \texttt{location} variable.
 \begin{lstlisting}[language=bash]
-make location=<location to shapes> validator-set-shacl-shapes
+make build-volumes
+make location=<location to shapes> set-shacl-shapes
 \end{lstlisting}
 
 \textbf{NOTE}: Make sure that the location specified ends with a trailing slash \texttt{/}, otherwise the command will not work propery and the templates will not be copied to the docker volume.
 
 Example:
 \begin{lstlisting}[language=bash]
-make location=~/shapes/location/ validator-set-shacl-shapes
-	\end{lstlisting}
+make location=/shapes/location/ set-shacl-shapes
+\end{lstlisting}
 
-After this, restart the \texttt{rdf-validator-api} container for the effects to take place.
+After this, restart the \texttt{lam-validator-api} container for the effects to take place.
+
+\subsection{LAM Generation Service}
+
+LAM Generation Service application exposes an API and an UI for generating the LAM reports (in HTML and PDF formats) and the document index files. It depends on a dedicated triple store which will contain the LAM dataset indicated by the \texttt{LAM\_FUSEKI\_QUERY\_URL} described in table \ref{tab:fuseki} environment variable. 
+
+The configuration options are summarised below.
+
+\begin{longtable}[c]{@{}p{4cm}p{5cm}l@{}}
+	\toprule
+	Description           & Value                   & Associated variable                   \\* \midrule
+	\endfirsthead
+	%
+	\multicolumn{3}{c}%
+	{{\bfseries Table \thetable\ continued from previous page}}                             \\
+	\endhead
+	%
+	\bottomrule
+	\endfoot
+	%
+	\endlastfoot
+	%
+	LAM Generation Service UI port  & 8050  & \texttt{LAM\_UI\_PORT}             \\	
+	LAM Generation Service UI location  & http://lam-generation-service-ui  & \texttt{LAM\_UI\_LOCATION}             \\
+	LAM Generation Service API port     & 4050                              & \texttt{LAM\_API\_PORT}                \\
+	LAM Generation Service API location & http://lam-generation-service-api & \texttt{LAM\_API\_LOCATION}            \\
+	\bottomrule
+	\caption{LAM Generation Service configuration}
+	\label{tab:lam-generation}                                                                   \\
+\end{longtable}
+
+\subsection{LAM dedicated triple store}
+	
+LAM Generation Services depends on a Fuseki triple store and query the data required for the LAM reports and index files.
+
+The available configurations are described below. 
+
+\begin{longtable}[c]{@{}p{4cm}p{5cm}l@{}}
+	\toprule
+	Description & Value & Associated variable \\* \midrule
+	\endfirsthead
+	%
+	\multicolumn{3}{c}%
+	{{\bfseries Table \thetable\ continued from previous page}} \\
+	\endhead
+	%
+	\bottomrule
+	\endfoot
+	%
+	\endlastfoot
+	%
+	Admin account password & admin & \texttt{LAM\_FUSEKI\_ADMIN\_PASSWORD} \\
+	User name & admin & \texttt{LAM\_FUSEKI\_USERNAME} \\
+	Password & admin & \texttt{LAM\_FUSEKI\_PASSWORD} \\
+	Folder where Fuseki stores data & ./data/diff & \texttt{LAM\_FUSEKI\_DATA\_FOLDER} \\
+	Additional arguments passed to JVM & -Xmx2g & \texttt{LAM\_FUSEKI\_JVM\_ARGS} \\
+	URL & http://rdf-differ-fuseki & \texttt{LAM\_FUSEKI\_LOCATION} \\
+	LAM Fuseki port                     & 3030                              & \texttt{LAM\_FUSEKI\_PORT}             \\
+	LAM Fuseki External port            & 3010                              & \texttt{LAM\_FUSEKI\_EXTERNAL\_PORT}   \\
+	LAM Fuseki location                 & http://lam-fuseki                 & \texttt{LAM\_FUSEKI\_LOCATION}     \\
+	Fuseki LAM dataset location                  & \texttt{/lam/query}
+	& \texttt{LAM\_FUSEKI\_QUERY\_URL}     \\* \bottomrule
+	\caption{LAM Generation Services dedicated triple store configuration}
+	\label{tab:fuseki}\\
+\end{longtable}
