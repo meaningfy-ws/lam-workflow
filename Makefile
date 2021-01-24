@@ -23,6 +23,7 @@ stop-services:
 
 set-shacl-shapes:
 	@ echo "$(BUILD_PRINT)Copying custom SHACL shapes"
+	@ [ "$(location)" ] || ( echo ">> template 'location' is not set"; exit 1 )
 	@ docker rm temp | true
 	@ docker volume rm rdf-validator-shacl-shapes | true
 	@ docker volume create rdf-validator-shacl-shapes
