@@ -7,17 +7,15 @@
 	
 	In this document we take an enterprise architecture perspective and aim to provide several architecture views (see Section \ref{sec:views}) which are necessary and sufficient to describe the asset lifecycle process. 
 	
-	In developing this architecture, we are in part using the TOGAF \citep{togaf9.2} methodology, which is, in fact, a framework for enterprise architecture that provides an approach for designing, planning, implementing and governing an enterprise information technology architecture. Although we do not follow this framework completely, we took inspiration from parts of it which were applicable to the goals of this architecture.  
-	
-	For architecture representation, we adopt ArchiMate language \citep{archimate3.1}, which is an open and independent enterprise architecture modelling language to support the description, analysis and visualisation of architecture within and across business domains in a clear and unambiguous way.
+	In developing this architecture, we are in part using the TOGAF \citep{togaf9.2} methodology, which is, in fact, a framework for enterprise architecture that provides an approach for designing, planning, implementing and governing an enterprise information technology architecture. Although we do not follow this framework extensively, relevant parts of it were applied to the goals of this architecture.
+		
+	For representing the architecture models, ArchiMate language \citep{archimate3.1} is adopted. It is an open and independent enterprise architecture modelling language to support the description, analysis and visualisation of architecture within and across business domains in a clear and unambiguous way.
 
-	We have conducted a series of interview with the SU management, the technical team and the business teams. In developing the motivation architecture, we entirely rely on the input from the SU management, presented in Section \ref{sec:motivation-architecture}.
-	
-	 The business use cases represent the knowledge elicited from the technical team and the business teams and are presented in Section \ref{sec:business-use cases}. 
+	Based on the initial requirements specifications document \citep{lam-requirements-2020} and a series of interviews conducted with the LAM team, the structure of the project stakeholders motivations was established. It is presented in Section \ref{sec:motivation-architecture}.
+		 
+	The business and application layers of this architecture, are a gradual fleshing out of the use cases presented in the project preliminary requirements \citep{lam-preliminary-requirements-2019}, the functional requirements in the requirements specifications document \citep{lam-requirements-2020} and the architecture for managing and publishing semantic assets \citep{costetchi2020d} adopted by the A2 unit.
 	 
-	 The other layers of this architecture, are a gradual fleshing out of the use cases, and rely on the author experience of working a few years side by side with SU business (documentalists) and technical teams. This experience results in the knowledge of the applications and technical peculiarities of the SU. 
-	 
-	 The corresponding ArchiMate diagrams were modelled and designed using Enterprise Architect Tool \citep{ea}. Finally this report was written covering the overall architecture. 
+	The ArchiMate diagrams corresponding to each architecture layer were modelled and designed using Enterprise Architect Tool \citep{ea}. Finally this report was written covering the overall architecture. 
 	
 	\section{Architecture views}
 	\label{sec:views}
@@ -28,18 +26,15 @@
 	
 	An architecture view expresses the architecture of the system of interest in accordance with an architecture viewpoint (or simply ``viewpoint''). There are two aspects to a viewpoint: the concerns it frames for the stakeholders and the conventions it establishes on views \citep{archimate3.1}.
 
-	Viewpoints are designed for the purpose of communicating certain aspects and layers of an architecture. In this document we address the motivation view (Section \ref{sec:motivation-architecture}), the business view (Section \ref{sec:business-architecture}), the application view (Section \ref{sec:application-architecture}) and the technology view (Section \ref{sec:technology-architecture}).
+	Viewpoints are designed for the purpose of communicating certain aspects and layers of an architecture. In this document we address \textit{the motivation view} (Section \ref{sec:motivation-architecture}), \textit{the business view} (Section \ref{sec:business-architecture}), and \textit{the application view} (Section \ref{sec:application-architecture}).
 	
-	Instead of describing what each of these views represents in this section, we decided to provide such an description in the beginning of each of the subsequent sections. This way, we aim to ease the section reading by providing the reader a fresh introduction into the structure of a prototypical layer architecture before the actual SU architecture is described.
+	Instead of describing what each of these views represents in this section, we decided to provide such an description in the beginning of each of the subsequent sections. This way, we aim to ease the section reading by providing the reader a fresh introduction into the structure of a prototypical layer architecture before the actual architecture is described.
 	
 	\section{ArchiMate elements}
 	
     This section presents the ArchiMate elements, in terms of their definition and the graphical notation, which we employ in each of the architecture views. 
 
-	% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-% \usepackage{longtable}
-% Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
+
 \begin{longtable}[c]{@{}lll@{}}
 	\caption{Overview of the relevant motivation elements \citep{archimate3.1}}
 	\label{tab:motivation}\\
@@ -197,4 +192,13 @@
 			Junction & \parbox{.56\linewidth}{Used to connect relationships of the same type.} & \cincludegraphics[width=4\normalbaselineskip]{images/views/relations/junction} \\ \bottomrule
 	\end{longtable}
 
+	 \section{Service Oriented Architecture (SOA)}
+	 \label{sec:soa}
 	 
+	 This section provides a motivation for adopting the design guidelines and best practices offered by the \textit{Service Oriented Architecture } (SOA) \cite{open2016soa} paradigm. This is especially important for guiding the development and engineering teams away from a monolith tightly coupled software capabilities that are executed on a dedicated server, towards loosely coupled services exposed through REST APIs capable of running as scalable processes in a distributed environment.
+	  
+	 \textit{Service-oriented architecture} is a style of software design where services are provided to the other components by application components, through a communication protocol over a network. A SOA service is a discrete unit of functionality that can be accessed remotely and acted upon and updated independently. SOA is also intended to be independent of vendors, products and technologies.
+	 
+	 SOA is believed to help businesses respond more quickly and more cost-effectively to changing market conditions. This style of architecture promotes high component reuse and facilitates interconnection between components. The SOA systems are known to be resilient in the light of changing technologies because the components are loosely coupled and could easily be replaced by alternative implementations exposing with the same interfaces.	SOA could be regarded as an architectural evolution rather than as a revolution. It captures many of the best practices of previous software architectures and it is a practical approach for cloud computing \citep{velte2019cloud}.
+	 
+	 Service-oriented architecture can be implemented with web services or Micro-services \citep{brandner2004web}. This is done to make the functional building-blocks accessible over standard Internet protocols that are independent of platforms and programming languages. These services can represent either new applications or just wrappers around existing legacy systems to make them network-enabled \citep{channabasavaiah2003migrating}. By following this approach, the application implementation materialises as a suite of micro-services. Where necessary, the micro-services can be implemented as wrappers around existent components and at a later stage the components can be replaced by new implementations. 
