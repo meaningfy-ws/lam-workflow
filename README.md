@@ -81,9 +81,9 @@ This is the triple store that is used by the LAM generation service software to 
 
 ### Hardware requirements
 
-At least ??? of RAM.
-At least a ??? core CPU.
-At least ??? of free space.
+At least 8 Gb of RAM.
+At least a dual core CPU.
+At least 64Gb of free space.
 
 ### Software requirements 
 

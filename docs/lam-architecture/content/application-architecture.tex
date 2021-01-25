@@ -3,9 +3,7 @@
 	
     This chapter covers the application architecture. The essential services and application components that enact the business processes are presented here.
     
-    This architecture layer addressed the questions of how each application functions, through which services that functionality can be operationalised and which data objects are affected. In addition, cross layer view is offered in Section \ref{sec:application-lifecycle} presenting through which application capabilities the asset lifecycle is realised.
-    
-    First a prototypical application structure is presented in order to facilitate better understanding of the diagrams in this chapter. 
+    This architecture layer addressed the questions of how each application functions, through which services that functionality can be operationalised and which data objects are affected. In addition, cross layer view is offered in Section \ref{sec:application-lifecycle} presenting through which application capabilities the asset lifecycle is realised. But first, a prototypical application structure is presented in order to facilitate better understanding of the diagrams in this chapter. 
 
 	\section{Prototypical application structure}
 	
@@ -26,27 +24,26 @@
 	
 	Components are said to expose interaction \textit{interfaces} which are modelled, in ArchiMate, as proper parts of the components. The interfaces are assigned to services signifying how the latter are to be accessed and consumed. 
 	
-	Also, components, as well as processes they encapsulate, access \textit{data objects}, which are passive components of the application architecture.
+	Also, the components as well as the processes they encapsulate, access \textit{data objects}, which are passive components of the application architecture.
 
-	The solution architecture presented in this section is an adaptation of the generic architecture. Here we focus on presenting what application services are used to support each business process. Moreover, we are interested in grasping the difference in the application layer, between the current and new versions of the business processes. 
+	The solution architecture presented in this section is an adaptation of the generic architecture. Here we focus on presenting what application services are used to support each business process. Moreover, we are interested in grasping the difference in the application layer between the current and new versions of the business processes. 
 	
-	To do so, we split the application view diagrams into three vertical lanes. The left lane hosts the current version of the business process as well as the application services and components that are used to support it. In the right lane, we place the new business process and the new application services and components that will have to be adopted for the digital transformation. The middle lane hosts the services and components that are are currently employed and will be carried over into the new application architecture: they are common to both the current and new architectures.
+	To do so we split the application view diagrams into three vertical lanes. The left lane hosts the current version of the business process as well as the application services and components that are used to support it. In the right lane, we place the new business process and the new application services and components that will have to be adopted for the digital transformation. The middle lane hosts the services and components that are are currently employed and will be carried over into the new application architecture: they are common to both the current and new architectures.
 
-	Below we present an overview of the application architecture, in terms of services alone, depicting how the asset life-cycle stages are served.	
+	Below we present an overview of the application architecture, in terms of services alone, depicting how the asset life-cycle stages are served.
 	
 	\section{LAM specific application architecture}
 
-	This section presents the application architecture for services developed in the context of LAM\#2 project. In Section \ref{sec:application-lifecycle} these applications will be placed into the context of asset lifecycle process described in Section \ref{sec:asset-lifecycle}. 
+	This section presents the application architecture for services developed in the context of LAM\#2 project. In Section \ref{sec:application-lifecycle} these applications will be placed in the context of the asset lifecycle process described in Section \ref{sec:asset-lifecycle}. 
 	
 	The project specific tools are \textit{the transformation tool}, \textit{the validation tool} and \textit{the online (dissemination) tool}.
 	
 	\subsection{LAM transformation tool}
 	\label{sec:transformation-tool}
 		
-	First of the three tools, is the transformation tool from structured RDF data into human readable representations. This tool contributes directly to the goal of producing and dissemination the LAM data for end-user consumption on the OP Portal. This tool is used during the release phase of the lifecycle as will be explained in Section \ref{sec:release}.	
+	The first of the three tools is the transformation tool from structured RDF data into human readable representations. This tool contributes directly to the goal of producing and dissemination the LAM data for end-user consumption on the OP Portal. This tool is used during the release phase of the lifecycle as will be explained in Section \ref{sec:release}.	
 	
 	Figure \ref{fig:app-transformation-tool} depicts the application architecture, with LAM transformer component in the centre of the diagram.
-	
 	
     \begin{figure}[!h]
 		\centering
@@ -55,11 +52,9 @@
 		\label{fig:app-transformation-tool}
 	\end{figure}
 
-
-
 	The main service this application exposes is the content transformation, positioned on the top of the diagram. This service is exposed through two interfaces: a web graphical user interface and an application programming interface. This service is realised by three application functionalities: generation of the HTML representation, generation of the PDF representation and generation of JSON indexes. The first two representations are meant to be distributed as such for the end-user consumption, while the indexes are meant to enable the search functionality provided by the OP Portal. The input taken by these functionalities shall be structured according to LAM-SKOS-AP\cite{lam-skos-ap-2019}.
 	
-	In order to facilitate the transmission of the artefacts generated by the LAM transformer, an additional service is foreseen, which aggregates the results of the transformation service into a ZIP archive. In the next section is described the LAM online tool, which ingests the ZIP archive and disseminates its content on a web interface. 
+	In order to facilitate the transmission of the artefacts generated by the LAM transformer an additional service is foreseen, which aggregates the results of the transformation service into a ZIP archive. In the next section is described the LAM online tool, which ingests the ZIP archive and disseminates its content on a web interface. 
 	
 	\subsection{LAM online tool}
 	
@@ -75,10 +70,9 @@
 
 	The import service is exposed through a dedicated Axway folder where a scheduled job regularly checks for new content. As soon as new content is placed there the ingestion functionality starts. The expected input is the ZIP archive containing the PDF, HTML and JSON content. When this archive is unpacked each of these representations is treated accordingly for different purposes.
 	
-	The content import service is realised through four application functions assigned to the LAM online tool component (see central area in Figure \ref{fig:app-online-tool-ingestion}). The PDF files are ingested into a WebPub repository using Liferay framework. The HTML files are ingested into a Liferay CMS repository. The JSON index files are loaded into the Elasticsearch index. The import operation is triggered by running a scheduled task. 
+	The content import service is realised through four application functions assigned to the LAM online tool component (see central area in Figure \ref{fig:app-online-tool-ingestion}). The PDF files are ingested into a WebPub repository using Liferay framework. The HTML files are ingested into a Liferay CMS repository. The JSON index files are loaded into the Elasticsearch index. The import operation is triggered by running a scheduled task.
 	
-	
-	The LAM online tool is conceived as a mini-website in the OP Portal. The main dissemination method is a Web user interface, exposing two services: the content consultations ervice and the content search service. 
+	The LAM online tool is conceived as a mini-website in the OP Portal. The main dissemination method is a Web user interface, exposing two services: the content consultations service and the content search service. 
 	
     \begin{figure}[!h]
 	\centering
@@ -95,16 +89,16 @@
 	\label{fig:app-online-tool-management}
 	\end{figure}
 
-	The search service is realised by Elasticsearch search functionality and serving the search results from the index and rendering them in a web interface. 
+	The search service is realised by two functionalities. The first is the Elasticsearch search functionality that takes a query and provides back the search results. The second is serving of the search results from the index and rendering them in a web interface. 
 	
-	The consultation service is realised by serving web pages from Liferay CMS and the PDF documents from WebPub repository. In addition there is a set of Liferay editorial pages exposing custom content, such as news, publication change notes, links to relates resources etc. These pages are edited through LAM website management console offered by Liferay framework. This service is depicted in Figure \ref{fig:app-online-tool-management}. 
+	The consultation service is realised by serving web pages from the Liferay CMS and the PDF documents from the WebPub repository. In addition, there is a set of Liferay editorial pages exposing custom content such as news, publication change notes, links to related resources etc. These pages are edited through LAM website management console offered by the Liferay framework. This service is depicted in Figure \ref{fig:app-online-tool-management}. 
 	
-	Another configuration that is available in the administration console is that of the scheduling task. This functionality constitute in fact an extension to the scheduling functionality available in the OP Portal. For this reason the configuration is exposed through OP Portal web interface. 
+	Another configuration that is available in the administration console is that of the scheduling task. This functionality constitutes, in fact, an extension to the scheduling functionality available in the OP Portal. For this reason the configuration is exposed through the OP Portal web interface. 
 	
 	\subsection{LAM validation tool}
 	
-	In Section \ref{sec:lam-maintenance-publication} was presented that structured LAM data are maintained using VocBench3 system. This system is versatile and well suited for the task, yet structural deviations from the designed model, LAM-SKOS-AP, are likely to happen. 
-	The motivation for using the LAM validation tool is that after the data are exported from VocBench3 and fed as input to the LAM transformation tool, it is imperative that the data are valid. Otherwise, the LAM transformation tool may render unexpected results or behave in an unpredictable manner. 
+	In Section \ref{sec:lam-maintenance-publication} was presented that structured LAM data is maintained using VocBench3 system. This system is versatile and well suited for the task, yet structural deviations from the designed LAM-SKOS-AP model are likely to happen. 
+	The motivation for using the LAM validation tool is that after the data is exported from VocBench3 and fed as input to the LAM transformation tool, it is imperative that the data is valid. Otherwise, the LAM transformation tool may render unexpected results or behave in an unpredictable manner. 
 	
  	\begin{figure}[!h]
 		\centering
@@ -115,17 +109,16 @@
 
 	In order to ensure that the transformation tool generates satisfiable results, the input data needs to be validated. This is a procedure preformed in the implementation phase, as will be shown in Section \ref{sec:implementation}. 
 	
-	Figure \ref{fig:app-lam-validator} depicts the LAM validator application architecture. It exposes a single service through a Web user interface and an API. The service is realised through a SHACL \citep{shacl-spec} validation functionality with a predetermined set of SHACL shapes - the LAM-SKOS-AP\citep{lam-skos-ap-2019} SHACL representation. Any RDF fine that is provided to the service is tested against this preset data shape. 
+	Figure \ref{fig:app-lam-validator} depicts the LAM validator application architecture. It exposes a single service through a Web user interface and an API. The service is realised through a SHACL \citep{shacl-spec} validation functionality with a predetermined set of SHACL shapes - the LAM-SKOS-AP\citep{lam-skos-ap-2019} SHACL representation. Any RDF file that is provided to the service is tested against this preset data shape. 
 
 	\section{LAM lifecycle application architecture}
 	\label{sec:application-lifecycle}
 	
-	In this section the lifecycle process describe din Section \ref{sec:asset-lifecycle} is connected to the application services and components realising them. Many of these services are available for usage, and describing them in detail is out of scope here. What is relevant to show here how the lifecycle processes are served and where the LAM specific applications are involved.
+	In this section the lifecycle process described din Section \ref{sec:asset-lifecycle} is connected to the application services and components realising them. Many of these services are available for usage, and describing them in detail is out of scope here. What is relevant to show here is how the lifecycle processes are served and where the LAM specific applications are involved.
 	
 	\subsection{Evolution management}
 	
-	In the first stage of the asset lifecycle, the application requirements are limited to client
-communication and the request documentation services as depicted in Figure \ref{fig:app-evolution-management}. The email service is realised by the Outlook software. Issue management is realised by the Jira system.
+	In the first stage of the asset lifecycle, the application requirements are limited to client communication and the request documentation services as depicted in Figure \ref{fig:app-evolution-management}. The email service is realised by the Outlook software. Issue management is realised by the Jira system.
 	
     \begin{figure}[!h]
 		\centering
@@ -147,11 +140,11 @@ communication and the request documentation services as depicted in Figure \ref{
 		\label{fig:app-implementation}
 	\end{figure}
 	
-	The issue management, just like in the case of evolution management stage, is realised by Jira system. The content editing is realised through VocBench3 system, and once the editing operation of complete, the content is exported for further processing. First it is validated using the LAM validation tool. Then it is compared to a previous version to check whether the set of changed done corresponds to what is requested in the Jira ticket. The asset is also fingerprinted, to asses for possible structural deviations, not covered by the validation service. It is important to mention that the LAM asset is stored using a file management and versioning service realised by the SVN system. This file based repository is used as a medium to transit the assets through all the lifecycle phases, except consumption. 
+	The issue management, just like in the case of evolution management stage, is realised by Jira system. The content editing is realised through VocBench3 system, and once the editing operation is complete, the content is exported for further processing. First it is validated using the LAM validation tool. Then it is compared to a previous version to check whether the set of changed data corresponds to what is requested in the Jira ticket. The asset is also fingerprinted, to asses for possible structural deviations, not covered by the validation service. It is important to mention that the LAM asset is stored using a file management and versioning service realised by the SVN system. This file based repository is used as a medium to transit the assets through all the lifecycle phases, except consumption. 
 
 	\subsection{Validation}
 	
-	The stages following the implementation is validation. The services involved in this phase are issue management and file management service depicted in Figure \ref{fig:app-validation}.
+	Validation is the next stage following the implementation. The services involved in this phase are issue management and file management services depicted in Figure \ref{fig:app-validation}.
 		
 	 \begin{figure}[!h]
 		\centering
@@ -160,7 +153,7 @@ communication and the request documentation services as depicted in Figure \ref{
 		\label{fig:app-validation}
 	\end{figure}	
 	
-	Generation fo validation artefacts is done during the implementation stage and stored in SVN. This stage is designed to allow a second person to check whether the implementation is done correctly following the ``four eye principle''. The validation office simply needs to access the validation artefacts from SVN and compare to the original change request. 
+	Generation for the validation artefacts is done during the implementation stage and stored in SVN. This stage is designed to allow a second person to check whether the implementation is done correctly following the ``four eye principle''. The validation office simply needs to access the validation artefacts from SVN and compare them to the original change request. 
 	
 	\subsection{Release}
 	\label{sec:release}
@@ -174,13 +167,12 @@ communication and the request documentation services as depicted in Figure \ref{
 		\label{fig:app-release}
 	\end{figure}
 
-	In this stage, depicted in Figure \ref{fig:app-release}, general data transformation service is involved, but also LAM transformation tool that was described in Section \ref{sec:transformation-tool}. The input and output of the transformations are red from and written back into the SVN system. Optionally a data validation service is used to perform a technical assessment before being sent to the dissemination systems.
+	In this stage, depicted in Figure \ref{fig:app-release}, a general data transformation service is involved, but also the LAM transformation tool that was described in Section \ref{sec:transformation-tool}. The input and output of the transformations are read from and written back into the SVN system. Optionally, a data validation service is used to perform a technical assessment before the data is sent to the dissemination systems.
 	
 	\subsection{Publication}
 	\label{sec:publication}
 	
-	The publication stage is the last one in the asset life-cycle process. Its application
-architecture is depicted in Figure \ref{fig:app-transformation-tool}.
+	The publication is the last stage in the asset life-cycle process. Its application architecture is depicted in Figure \ref{fig:app-transformation-tool}.
 	In this phase, the assets are packaged and transmitted to the dissemination system. 
 	
 	 \begin{figure}[!h]
@@ -190,10 +182,9 @@ architecture is depicted in Figure \ref{fig:app-transformation-tool}.
 		\label{fig:app-publication}
 	\end{figure}
 
-	The packaging is realised through two services. The ZIP generation service, realised by the LAM transformation tool, prepares the asset to be transmitted to the OP Portal system, where the LAM online tool is deployed. 
+	The packaging is realised through two services. First is the ZIP generation service, realised by the LAM transformation tool, which prepares the asset to be transmitted to the OP Portal system, where the LAM online tool is deployed. 
 	
-	The METS\citep{mets} asset packaging service it is realised by the legacy
-	package generator which assembles in various ways asset artefacts as necessary for
-partner dissemination systems and final consumers. This packaging specific to the Cellar system where the LAM data are published in machine readable format. 
+	\enlargethispage{2em}
 	
-	This brings us to the end of the application architecture description.
+	Second is the METS\citep{mets} asset packaging service is realised by the legacy package generator which assembles in various ways the asset artefacts as necessary for partner dissemination systems and final consumers. This packaging is specific to the Cellar system where the LAM data is published in machine readable format. This brings us to the end of the application architecture description.
+	
