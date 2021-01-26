@@ -7,7 +7,7 @@ There is a range of ports that must be available on the host machine as they wil
 
 \begin{longtable}[c]{@{}p{3.64cm}p{1.25cm}p{1.25cm}p{1.9cm}p{5cm}@{}}
 	\toprule
-	Service name  & HTTP port UI & HTTP port API & FTP port & Mounted volume \\* \midrule
+	Service name  & HTTP port UI & HTTP port API & Mounted volume \\* \midrule
 	\endfirsthead
 	%
 	\multicolumn{5}{c}%
@@ -19,7 +19,9 @@ There is a range of ports that must be available on the host machine as they wil
 	%
 	\endlastfoot
 	%
-	RDF validator & 8010         & 4010          &          &                \\* \hline
+	LAM validator & 10002       & 10001          &     rdf-validator -shacl-shape          \\* \hline
+	LAM Generation Service & 8050         & 4050               &                \\* \hline
+	LAM dedicated triple store & 3010                 &          &    lam-fuseki            \\* \hline
 	\caption{Port usage inventory}
 	\label{tab:port-inventory}                                               \\
 \end{longtable}
@@ -111,4 +113,4 @@ To stop the services run
 docker-compose --file docker/docker-compose.yml --env-file docker/.env down
 \end{lstlisting}
 
-The detailed explanation on how to configure them is provided in the Configuration section for each of these services (See Section \ref{sec:rdf-validator-ss} ).
+The detailed explanation on how to configure them is provided in the Configuration section for each of these services (See Section \ref{sec:rdf-validator-ss}).
