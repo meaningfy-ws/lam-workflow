@@ -49,7 +49,7 @@ services:
     container_name: lam-fuseki
     image: meaningfy/fuseki:latest
     volumes:
-      - ${PWD}/${LAM_FUSEKI_DATA_FOLDER}/fuseki:/fuseki
+      - lam-fuseki:/fuseki
     env_file: .env
     environment:
       - ADMIN_PASSWORD=${LAM_FUSEKI_ADMIN_PASSWORD}
@@ -58,6 +58,9 @@ services:
       - ${LAM_FUSEKI_EXTERNAL_PORT}:3030
     networks:
       - mydefault
+
+volumes:
+  lam-fuseki:
 
 networks:
   mydefault:
