@@ -139,6 +139,18 @@ To stop the services run:
 make stop-services
 ```
 
+### Makefile targets
+
+**validator-set-report-template**
+- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
+- Used for: copying your custom validator report template inside the container's volume
+
+
+**validator-set-shacl-shapes**
+- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
+- Used for: copying your custom SHACL shapes inside the container's volume
+
+
 # Contributing
 You are more than welcome to help expand and mature this project. 
 
