@@ -1,0 +1,34 @@
+\section{Makefile targets}
+\label{sec:makefile_targets}
+	Makefile targets provide a convenient and easy way of running different tools that the software packages provide. The usage is \textbf{make \textit{target}}.
+	
+	Following is a list of available targets along with the description.
+
+\begin{itemize}
+	\item \textbf{install}
+	- Upgrades PIP to the latest version and installs the local requirements
+	
+	\item \textbf{test}
+	- Runs pytest which in turns executes the unit and BDD tests which are ran using headless Chrome. You need to successfully run the \textbf{install} target beforehand, as it installs the necessary prerequisites (the chrome browser and the driver which corresponds to that specific chrome browser version)
+	
+	\item \textbf{test-with-ui}
+	- Runs pytest which in turns executes the unit and BDD tests which are ran using the fully UI enabled Chrome. You need to successfully run the \textbf{install} target beforehand, as it installs the necessary prerequisites (the chrome browser and the driver which corresponds to that specific chrome browser version). A "Chrome is being controlled by automated test software" message will be displayed on the top. Please wait for the tests to finish and do not interact with the browser window(s) driven by the BDD tests. 
+	
+	\item \textbf{build-services}
+	- Uses docker-compose to build all the services defined in the docker/docker-compose.yml file.
+	
+	\item \textbf{start-services}
+	- Uses docker-compose to start the services defined in the docker/docker-compose.yml file.
+	
+	\item \textbf{stop-services}
+	- Uses docker-compose to stop the services defined in the docker/docker-compose.yml file.
+	
+	\item \textbf{generate-indexes}
+	- Uses \href{https://pypi.org/project/eds4jinja2/}{eds4jinja2} to generate the indexes that will later be sent to ElasticSearch for indexing.
+	
+	\item \textbf{generate-content}
+	- Uses \href{https://pypi.org/project/eds4jinja2/}{eds4jinja2} to generate the content that will be integrated in the portal.
+	
+	\item \textbf{generate-tests-from-features}
+	- Based on the feature files, this target generates the missing Python test code.
+\end{itemize}
