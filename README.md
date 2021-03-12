@@ -70,8 +70,8 @@ This is the triple store that is used by the LAM generation service software to 
 | User name| admin | LAM_FUSEKI_USERNAME |
 | Password | admin | LAM_FUSEKI_PASSWORD|
 | Folder where Fuseki stores data | `./fuseki-lam-volume` | LAM_FUSEKI_DATA_FOLDER|
-| Internal port | 3010 | LAM_FUSEKI_PORT |
-| External port | 3030 | LAM_FUSEKI_EXTERNAL_PORT |
+| Internal port | 3030 | LAM_FUSEKI_PORT |
+| External port | 3010 | LAM_FUSEKI_EXTERNAL_PORT |
 | Additional arguments passed to JVM | -Xmx2g | LAM_FUSEKI_JVM_ARGS|
 | URL | http://rdf-differ-fuseki | LAM_FUSEKI_LOCATION |
 | Query URL | /lam/query | LAM_FUSEKI_QUERY_URL |

@@ -11,11 +11,11 @@ build-volumes:
 
 start-services:
 	@ echo -e '$(BUILD_PRINT)(dev) Starting the containers'
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d
+	@ docker-compose --file docker/docker-compose.yml --env-file .env up -d
 
 stop-services:
 	@ echo -e '$(BUILD_PRINT)(dev) Stopping the containers'
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env stop
+	@ docker-compose --file docker/docker-compose.yml --env-file .env stop
 
 #-----------------------------------------------------------------------------
 # custom configuration commands
