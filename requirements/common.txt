@@ -8,3 +8,6 @@ eds4jinja2 # git+https://github.com/meaningfy-ws/eds4jinja2@master#egg=eds4jinja
 openpyxl
 werkzeug
 gunicorn  # https://gunicorn.org/
+
+python-dotenv
+shortuuid
