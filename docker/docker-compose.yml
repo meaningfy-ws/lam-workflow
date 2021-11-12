@@ -25,7 +25,9 @@ services:
 
   lam-generation-service-api:
     container_name: lam-generation-service-api
-    image: meaningfy/lam-generation-service-api:latest
+    build:
+      context: ..
+      dockerfile: ./docker/lam4doc/api/Dockerfile
     ports:
       - ${LAM_API_PORT}:${LAM_API_PORT}
     env_file: .env
@@ -35,7 +37,9 @@ services:
 
   lam-generation-service-ui:
     container_name: lam-generation-service-ui
-    image: meaningfy/lam-generation-service-ui:latest
+    build:
+      context: ..
+      dockerfile: ./docker/lam4doc/ui/Dockerfile
     ports:
       - ${LAM_UI_PORT}:${LAM_UI_PORT}
     env_file: .env
@@ -47,7 +51,9 @@ services:
 
   fuseki:
     container_name: lam-fuseki
-    image: meaningfy/fuseki:latest
+    build:
+      context: ..
+      dockerfile: ./docker/fuseki/Dockerfile
     volumes:
       - lam-fuseki:/fuseki
     env_file: .env
