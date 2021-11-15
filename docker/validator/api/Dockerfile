@@ -27,6 +27,6 @@ RUN pip install -r requirements.txt
 
 ENV RDF_VALIDATOR_SHACL_SHAPES_LOCATION=/usr/src/shacl-shapes
 
-COPY resources/ ${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}/
+COPY validator_resources/ ${RDF_VALIDATOR_SHACL_SHAPES_LOCATION}/
 
 CMD gunicorn --timeout ${RDF_VALIDATOR_GUNICORN_TIMEOUT-1200} --workers ${RDF_VALIDATOR_GUNICORN_API_WORKERS-2} --bind 0.0.0.0:${RDF_VALIDATOR_API_PORT} --reload --log-level=debug validator.entrypoints.api.run:app
