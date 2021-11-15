@@ -1,0 +1,11 @@
+requests
+connexion[swagger-ui]
+
+Flask
+flask-bootstrap
+Flask-Wtf
+
+rdflib
+python-dotenv
+eds4jinja2==0.1.27
+shortuuid

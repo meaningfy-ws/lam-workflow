@@ -3,7 +3,9 @@ version: '3.7'
 services:
   lam-validator-api:
     container_name: lam-validator-api
-    image: meaningfy/lam-validator-api:latest
+    build:
+      context: ..
+      dockerfile: ./docker/validator/api/Dockerfile
     ports:
       - ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
     env_file: .env
@@ -13,7 +15,9 @@ services:
 
   lam-validator-ui:
     container_name: lam-validator-ui
-    image: meaningfy/lam-validator-ui:latest
+    build:
+      context: ..
+      dockerfile: ./docker/validator/ui/Dockerfile
     ports:
       - ${RDF_VALIDATOR_UI_PORT}:${RDF_VALIDATOR_UI_PORT}
     env_file: .env
