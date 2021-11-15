@@ -1,0 +1,214 @@
+{# Default way of showing errors #}
+{% macro render_error(message) -%}
+    <div class="ui icon message error">
+        <i class="times circle icon"></i>
+        <div class="content">
+            <div class="header">
+                Error
+            </div>
+            <p>{{ message|e }}</p>
+        </div>
+    </div>
+{%- endmacro %}
+
+{# Default macro for showing/wrapping the fetch results #}
+{% macro render_fetch_results(content, error) -%}
+    {% if error %}
+        {{ render_error(error) }}
+    {% else %}
+        {% if content is undefined %}
+            {{ render_error("Some content expected but none was found.") }}
+        {% else %}
+            {{ caller() }}
+        {% endif %}
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro pandas_table(df, caption, column_labels={}) -%}
+    {% if (df is defined) and (df is not none) %}
+        <table class="display">
+            <thead class="center aligned">
+            <tr>
+                {% for column in df.columns %}
+                    {% if column in column_labels %}
+                        <th>{{ column_labels[column] }}</th>
+                    {% else %}
+                        <th>{{ column }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for idx, row in df.iterrows() %}
+                <tr>
+                    {% for colname in df.columns %}
+                        {# handle decimal format: float, float64, float32 #}
+                        {% if 'float' in (df.dtypes[colname] | string) %}
+                            <td class="left aligned collapsing">{{ row[colname] | round(precision=2) }}</td>
+                        {% else %}
+                            <td>{{ row[colname] }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+            <caption>{{ caption }}</caption>
+        </table>
+    {% else %}
+        {{ render_error("How did you get here? did you forget to use 'render_fetch_results' macro?") }}
+    {% endif %}
+{%- endmacro %}
+
+{% macro render_description_item_plain_literal(result_set, property_id, property_label, rdfa_property, accordion_style=False, code_mode=False, accordion_content_state="hide", is_integer=False) -%}
+    {% if conf.debug %}
+        <p class="debug-render">render_description_item_plain_literal: {{ property_id }}</p>
+    {% endif %}
+    {% if not result_set.empty and property_id in result_set.columns %}
+        {% set values = result_set[property_id].dropna() %}
+        {% if is_integer %}
+            {% set values = values.astype("int64", copy=False, errors="ignore") %}
+        {% endif %}
+        {% if not values.empty %}
+            {% if accordion_style %}
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <a class="text-dark font-weight-bold" onclick="showContent()">
+                            {{ property_label }}
+                        </a>
+                    </div>
+
+                    <div class="collapse {{ accordion_content_state }}">
+                        <div class="card-body">
+                            {% if code_mode %}
+                                <pre>
+                            {% for idx, item in values.iteritems() %}
+                                <code property="{{ rdfa_property }}">{{ item|e|replace("\n","<br/>") }}</code>
+                                {{ "<hr> " if not loop.last }}
+                            {% endfor %}
+                            </pre>
+                            {% else %}
+                                {% for idx, item in values.iteritems() %}
+                                    <p property="{{ rdfa_property }}">{{ item|e|replace("\n","<br/>") }}</p>
+                                    {{ "<hr> " if not loop.last }}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <dl>
+                    <dt title="{{ property_id }}">{{ property_label }}</dt>
+                    {% for idx, item in values.iteritems() %}
+                        <dd title="{{ property_id }}" property="{{ rdfa_property }}">{{ item|e }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {{ render_error("Either the result set is empty or the property id "~property_id~" doesn't exist") }}
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro render_description_item_iri(result_set, property_id, property_label, rdfa_property, link_label_property_id=None, accordion_style=False, accordion_content_state="hide", external_link=False) -%}
+    {% if conf.debug %}
+        <p class="debug-render">render_description_item_iri: {{ property_id }}</p>
+    {% endif %}
+    {% if not result_set.empty and property_id in result_set.columns %}
+        {% set values =  result_set[property_id].dropna() %}
+        {% if not values.empty %}
+            {% if accordion_style %}
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <a class="text-dark font-weight-bold" onclick="showContent()">
+                            {{ property_label }}
+                        </a>
+                    </div>
+
+                    <div class="collapse {{ accordion_content_state }}">
+                        <div class="card-body">
+                            {% for idx, item in values.iteritems() %}
+                                {% if link_label_property_id is none %}
+                                    <a title="{{ item }}" href={{ '"' + item +'"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ namespaces.uri_to_qname(item, error_fail=False) |e|replace("\n","<br/>") }}</a>
+                                    <br>
+                                {% else %}
+                                    <a title="{{ item }}" href={{ '"' + item + '"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ link_label_property_id }}</a>
+                                {% endif %}
+                                {{ "<hr> " if not loop.last }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <dl>
+                    <dt>{{ property_label }}</dt>
+                    {% for idx, item in values.iteritems() %}
+                        {% if link_label_property_id is none %}
+                            <dd>
+                                <a title="{{ item }}" href={{ '"' + item + '"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ namespaces.uri_to_qname(item, error_fail=False)|e|replace("\n","<br/>") }}</a>
+                            </dd>
+                        {% else %}
+                            <dd>
+                                <a title="{{ item }}" href={{ '"' + item + '"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ link_label_property_id }}</a>
+                            </dd>
+                        {% endif %}
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {{ render_error("Either the result set is empty or the property id "~property_id~" doesn't exist") }}
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro render_inline_values(result_set, property_id, label, default_value=None, separator=',', is_integer=False) %}
+    {% if not result_set.empty and property_id in result_set.columns %}
+        {% set values = result_set[property_id].dropna() %}
+        {% if is_integer %}
+            {% set values = values.astype("int64", copy=False, errors="ignore") %}
+        {% endif %}
+        {% if not values.empty %}
+            {{ label + " " + ", ".join(values.astype('str').tolist()) }}
+        {% elif default_value %}
+            {{ label + " " + default_value }}
+        {% endif %}
+    {% else %}
+        {{ render_error("Either the result set is empty or the property id "~property_id~" doesn't exist") }}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_inline_link(result_set, property_id, label, external=False) %}
+    {% if not result_set.empty and property_id in result_set.columns %}
+        {% set values = result_set[property_id].dropna() %}
+        {% if not values.empty %}
+            {{ label + " " }}
+            {% for idx, item in values.iteritems() %}
+                {% if external %}
+                    <a title="{{ item }}" href="{{ item }}"
+                       target="_blank">{{ namespaces.uri_to_qname(item, error_fail=False)|e|replace("\n","<br/>") }}</a>
+                {% else %}
+                    <a title="{{ item }}" href="#{{ item }}">{{ namespaces.uri_to_qname(item, error_fail=False)|e|replace("\n","<br/>") }}</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {{ render_error("Either the result set is empty or the property id "~property_id~" doesn't exist") }}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_namespaces(namesapces_dist) %}
+    <dl>
+        {% for prefix, ns in namesapces_dist|dictsort %}
+            <dt>{{ prefix }}</dt>
+            <dd><p class="iri_monospace">{{ ns }}</p></dd>
+        {% endfor %}
+    </dl>
+{% endmacro %}
+
+
