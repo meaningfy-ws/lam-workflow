@@ -80,8 +80,8 @@ def get_lam_files() -> tuple:
     try:
         with tempfile.TemporaryDirectory() as temp_folder:
             files_to_zip = list()
-            files_to_zip.append(service_generate_lam_report(temp_folder, HTML_REPORT_TYPE))
             files_to_zip.append(service_generate_lam_report(temp_folder, PDF_REPORT_TYPE))
+            files_to_zip.append(service_generate_lam_report(temp_folder, HTML_REPORT_TYPE))
             files_to_zip += service_generate_indexes(temp_folder)
 
             archive = zip_files(temp_folder, files_to_zip, config.LAM_ALL_ZIP_NAME)

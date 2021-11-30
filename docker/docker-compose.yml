@@ -6,6 +6,8 @@ services:
     build:
       context: ..
       dockerfile: ./docker/validator/api/Dockerfile
+    volumes:
+      - ..:/usr/src/app
     ports:
       - ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
     env_file: .env
@@ -18,6 +20,8 @@ services:
     build:
       context: ..
       dockerfile: ./docker/validator/ui/Dockerfile
+    volumes:
+      - ..:/usr/src/app
     ports:
       - ${RDF_VALIDATOR_UI_PORT}:${RDF_VALIDATOR_UI_PORT}
     env_file: .env
@@ -32,6 +36,8 @@ services:
     build:
       context: ..
       dockerfile: ./docker/lam4doc/api/Dockerfile
+    volumes:
+      - ..:/usr/src/app
     ports:
       - ${LAM_API_PORT}:${LAM_API_PORT}
     env_file: .env
@@ -44,6 +50,8 @@ services:
     build:
       context: ..
       dockerfile: ./docker/lam4doc/ui/Dockerfile
+    volumes:
+      - ..:/usr/src/app
     ports:
       - ${LAM_UI_PORT}:${LAM_UI_PORT}
     env_file: .env
