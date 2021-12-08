@@ -1,0 +1,14 @@
+requests
+requests-toolbelt
+connexion[swagger-ui]
+
+Flask
+flask-bootstrap
+Flask-Wtf
+
+rdflib
+python-dotenv
+eds4jinja2
+openpyxl
+werkzeug
+shortuuid

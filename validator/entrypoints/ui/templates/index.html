@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set active_page = "index" %}
+
+{% block app_content %}
+    <h1 id="title">RDF Validator</h1>
+    <div id="validators">
+        {% for href, _, caption in navigation_bar %}
+            <a class="btn btn-info" href="{{ href }}">{{ caption }} Validation</a>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -20,6 +20,14 @@ stop-services:
 #-----------------------------------------------------------------------------
 # custom configuration commands
 #-----------------------------------------------------------------------------
+set-report-template:
+	@ echo "$(BUILD_PRINT)Copying custom template"
+	@ docker rm temp | true
+	@ docker volume rm rdf-validator-template | true
+	@ docker volume create rdf-validator-template
+	@ docker container create --name temp -v rdf-validator-template:/data busybox
+	@ docker cp $(location). temp:/data
+	@ docker rm temp
 
 set-shacl-shapes:
 	@ echo "$(BUILD_PRINT)Copying custom SHACL shapes"

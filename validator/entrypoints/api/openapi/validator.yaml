@@ -1,0 +1,146 @@
+openapi: 3.0.1
+
+info:
+  title: RDF Diffing Service
+  description: |
+    This API provides the possibility to validate an RDF file or SPARQL endpoint.
+
+    Current implementation is based on the [RDFUnit tool](https://github.com/AKSW/RDFUnit/).
+
+  contact:
+    name: Eugeniu Costetchi
+    url: http://costezki.ro
+    email: costezki.eugen@gmail.com
+  license:
+    name: GNU General Public License Version 3 (GPLv3)
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+  version: 1.0.1
+
+servers:
+  - url: 'http://localhost:4010/'
+    description: Default development server
+
+paths:
+  /validate-file:
+    post:
+      operationId: validator.entrypoints.api.handlers.validate_file
+      description: Validate a an RDF file with the provided SHACL shapes.
+      parameters:
+        - name: report_extension
+          in: query
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileValidator'
+      responses:
+        200:
+          description: Request to validate endpoint successfully accepted for processing
+        400:
+          description: This configuration of the validator doesn't accept external SHACL shapes
+        415:
+          description: Unacceptable file types
+        422:
+          description: Wrong report extension format
+        5XX:
+          description: Unexpected Error
+  /validate-sparql-endpoint:
+    post:
+      operationId: validator.entrypoints.api.handlers.validate_sparql_endpoint
+      description: Validate a sparql endpoint with the provided SHACL shapes and optionally restricted to provided graphs.
+      parameters:
+        - name: report_extension
+          in: query
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                schema_file0:
+                  type: string
+                  format: binary
+                  description: The content of the SHACL shape file defining the validation constraints
+                schema_file1:
+                  type: string
+                  format: binary
+                  description: The content of the SHACL shape file defining the validation constraints
+                schema_file2:
+                  type: string
+                  format: binary
+                  description: The content of the SHACL shape file defining the validation constraints
+                schema_file3:
+                  type: string
+                  format: binary
+                  description: The content of the SHACL shape file defining the validation constraints
+                schema_file4:
+                  type: string
+                  format: binary
+                  description: The content of the SHACL shape file defining the validation constraints
+                graphs:
+                  type: array
+                  description: An optional list of named graphs to restrict the scope of the validation
+                  items:
+                    type: string
+                sparql_endpoint_url:
+                  type: string
+                  description: The endpoint to validate
+              required:
+                - sparql_endpoint_url
+      responses:
+        200:
+          description: Request to validate endpoint successfully accepted for processing
+        400:
+          description: This configuration of the validator doesn't accept external SHACL shapes
+        415:
+          description: Unacceptable file types
+        422:
+          description: Wrong report extension format
+        5XX:
+          description: Unexpected Error
+
+components:
+  schemas:
+    GenericValidator:
+      type: object
+      description: Base "class" for defining validator api structure
+      properties:
+        schema_file0:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file1:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file2:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file3:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file4:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+    FileValidator:
+      type: object
+      description: File validator
+      allOf:
+        - $ref: '#/components/schemas/GenericValidator'
+        - type: object
+          properties:
+            data_file:
+              type: string
+              format: binary
+              description: The data content to validate
+          required:
+            - data_file
