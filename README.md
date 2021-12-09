@@ -23,11 +23,11 @@ git clone https://github.com/meaningfy-ws/lam-workflow.git
 
 or unzip the project that you received.
 
-### Download the docker images and start the containers
+### Starting the services
 
 Navigate to the repository "lam-workflow" (where Git cloned the repository) or to the location where you unzipped the project.
 
-> For additional configuration for the validator services visit [`lam-validator`'s github page](https://github.com/meaningfy-ws/lam-validator)
+> For additional configuration for the validator services check the **Configuration** chapter from the [tech-manual.pdf](docs/tech-manual/tech-manual.pdf)
 
 After this preparation command, run 
 ```shell script
@@ -52,6 +52,8 @@ make stop-services
 - Used for: copying your custom SHACL shapes inside the container's volume
 
 
+# Usage
+For usage examples check  the **Usage** chapter from the [tech-manual.pdf](docs/tech-manual/tech-manual.pdf)
 
 # Documents
 * The *architectural design* and the detailed deployment specifications are provided in the [Enterprise Architecture document](docs/lam-architecture/lam-enterprise-architecture.pdf). 
