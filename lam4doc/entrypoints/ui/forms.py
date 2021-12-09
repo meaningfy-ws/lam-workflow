@@ -22,7 +22,7 @@ class ReportTypeForm(FlaskForm):
 
 
 class UploadRDFFilesForm(FlaskForm):
-    dataset_name = StringField('Dataset name', validators=[DataRequired()])
+    dataset_name = StringField('Dataset name', default="lam", validators=[DataRequired()])
     lam_properties_document = FileField('LAM properties document')
     lam_classes_document = FileField('LAM classes document')
     celex_classes_document = FileField('CELEX classes document')

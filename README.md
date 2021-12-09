@@ -3,6 +3,56 @@ The deployment package for the LAM services.
 
 This repository provides the enterprise architecture and description of capabilities necessary for the digital transformation of the asset publishing life-cycle workflow.   
 
+# Installation
+
+### Install the Docker engine
+
+ Please follow the official instructions located [here](https://docs.docker.com/engine/install/ubuntu/).
+ 
+### Install Docker compose
+
+Please follow the official instructions located [here](https://docs.docker.com/compose/install/).
+
+
+### Clone the lam-workflow repository to your target machine 
+Either open a shell and run the following:
+
+```
+git clone https://github.com/meaningfy-ws/lam-workflow.git
+``` 
+
+or unzip the project that you received.
+
+### Download the docker images and start the containers
+
+Navigate to the repository "lam-workflow" (where Git cloned the repository) or to the location where you unzipped the project.
+
+> For additional configuration for the validator services visit [`lam-validator`'s github page](https://github.com/meaningfy-ws/lam-validator)
+
+After this preparation command, run 
+```shell script
+make start-services
+```
+in the shell window.
+
+To stop the services run:
+```shell script
+make stop-services
+```
+
+### Makefile targets
+
+**validator-set-report-template**
+- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
+- Used for: copying your custom validator report template inside the container's volume
+
+
+**validator-set-shacl-shapes**
+- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
+- Used for: copying your custom SHACL shapes inside the container's volume
+
+
+
 # Documents
 * The *architectural design* and the detailed deployment specifications are provided in the [Enterprise Architecture document](docs/lam-architecture/lam-enterprise-architecture.pdf). 
 * The *technical guide* for installing and running the services are provided in the ["Installation guide"](docs/tech-manual/tech-manual.pdf). 
@@ -14,6 +64,8 @@ This repository provides the enterprise architecture and description of capabili
   * `/docs/references` - a database of literature references used in the enterprise architecture document and technical user manual 
   * `/docs/tech-manual` - the technical user manual for installing and running the services
 * `/docker` - the docker files representing specification and configurations for running the services on a target server
+* `/lam4doc` - source code for the LAM Generation Service
+* `/validator` - source code for the Validator Service
 * `README.md` - this file
 
 # Services and their respective configurations
@@ -103,54 +155,6 @@ The following ports must be available on the host machine, as they will be bound
 |10002| LAM Validator UI|
 
 
-# Deployment
-
-### Install the Docker engine
-
- Please follow the official instructions located [here](https://docs.docker.com/engine/install/ubuntu/).
- 
-### Install Docker compose
-
-Please follow the official instructions located [here](https://docs.docker.com/compose/install/).
-
-
-### Clone the lam-workflow repository to your target machine
- 
- Open a shell and paste the following line, then press `<Enter>`:
-
-```
-git clone https://github.com/meaningfy-ws/lam-workflow.git
-``` 
-
-### Download the docker images and start the containers
-
-In the same shell, navigate to the repository "lam-workflow" (where Git cloned the repository).
-
-> For additional configuration for the validator services visit [`lam-validator`'s github page](https://github.com/meaningfy-ws/lam-validator)
-
-After this preparation command, run 
-```shell script
-make start-services
-```
-in the shell window.
-
-To stop the services run:
-```shell script
-make stop-services
-```
-
-### Makefile targets
-
-**validator-set-report-template**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom validator report template inside the container's volume
-
-
-**validator-set-shacl-shapes**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom SHACL shapes inside the container's volume
-
-
 # Contributing
 You are more than welcome to help expand and mature this project. 
 
@@ -162,4 +166,4 @@ Please note we adhere to [Apache code of conduct](https://www.apache.org/foundat
 
 The documents, such as reports and specifications, available in the /doc folder, are licenced under a [CC BY 4.0 licence](https://creativecommons.org/licenses/by/4.0/deed.en).
 
-The scripts (stylesheets) and other executables are licenced under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) licence.
+The source code and other scripts are licenced under [EUPL v1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12) licence.
