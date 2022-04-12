@@ -86,12 +86,6 @@ class ValidatorConfig:
         return value
 
     @property
-    def RDF_VALIDATOR_FILE_NAME_BASE(self) -> Optional[str]:
-        value = os.environ.get('RDF_VALIDATOR_FILE_NAME_BASE', 'validation-report').strip('"')
-        self.logger.debug(value)
-        return value
-
-    @property
     def RDF_VALIDATOR_UI_NAME(self) -> Optional[str]:
         value = os.environ.get('RDF_VALIDATOR_UI_NAME', 'RDF Validator').strip('"')
         self.logger.debug(value)
