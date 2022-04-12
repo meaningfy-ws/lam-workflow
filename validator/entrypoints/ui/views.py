@@ -22,7 +22,6 @@ from validator.entrypoints.ui.api_wrapper import validate_file as api_validate_f
     validate_sparql_endpoint as api_validate_sparql_endpoint
 from validator.entrypoints.ui.forms import ValidateFromFileForm, ValidateSPARQLEndpointForm
 from validator.entrypoints.ui.helpers import get_error_message_from_response
-from validator.service_layer.helpers import create_file_name
 
 logger = logging.getLogger(config.RDF_VALIDATOR_LOGGER)
 
@@ -55,11 +54,10 @@ def validate_file():
             report_extension = form.report_extension.data if form.report_extension.data else TTL_EXTENSION
 
             with tempfile.TemporaryDirectory() as temp_folder:
-                file_name = create_file_name(config.RDF_VALIDATOR_FILE_NAME_BASE, report_extension)
-                report = Path(temp_folder) / file_name
+                report = Path(temp_folder) / str(f'report.{report_extension}')
                 report.write_bytes(response)
                 logger.debug('render validate file view')
-                return send_from_directory(Path(temp_folder), file_name, as_attachment=True)
+                return send_from_directory(Path(temp_folder), f'report.{report_extension}', as_attachment=True)
 
     logger.debug('render validate file clean view')
     return render_template('validate/file.html', form=form, title='Validate File',
@@ -89,11 +87,10 @@ def validate_sparql_endpoint():
             report_extension = form.report_extension.data if form.report_extension.data else TTL_EXTENSION
 
             with tempfile.TemporaryDirectory() as temp_folder:
-                file_name = create_file_name(config.RDF_VALIDATOR_FILE_NAME_BASE, report_extension)
-                report = Path(temp_folder) / file_name
+                report = Path(temp_folder) / str(f'report.{report_extension}')
                 report.write_bytes(response)
                 logger.debug('render validate sparql endpoint view')
-                return send_from_directory(Path(temp_folder), file_name, as_attachment=True)
+                return send_from_directory(Path(temp_folder), f'report.{report_extension}', as_attachment=True)
 
     logger.debug('request validate sparql endpoint clean view')
     return render_template('validate/sparql_endpoint.html', form=form, title='Validate SPARQL Endpoint',

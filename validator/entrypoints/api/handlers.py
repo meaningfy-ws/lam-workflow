@@ -54,7 +54,7 @@ def validate_file(data_file: FileStorage,
             report_path, report_filename = build_report_from_file(temp_folder,
                                                                   str(local_data_file),
                                                                   local_schema_files,
-                                                                  report_extension)
+                                                                  report_extension, data_file.filename)
             logger.debug('finish validate file endpoint')
             return send_file(report_path, as_attachment=True, attachment_filename=report_filename)  # 200
     except Exception as e:
@@ -97,7 +97,8 @@ def validate_sparql_endpoint(body,
                                                                              sparql_endpoint_url,
                                                                              graphs,
                                                                              local_schema_files,
-                                                                             report_extension)
+                                                                             report_extension,
+                                                                             'filename')
             logger.debug('finish validate sparql endpoint')
             return send_file(report_path, as_attachment=True, attachment_filename=report_filename)  # 200
     except Exception as e:

@@ -144,23 +144,23 @@ def create_report(location: str, html_report: str, ttl_report: str, extension: s
     logger.debug(f'start creating report with extension {extension}')
     if extension == TTL_EXTENSION:
         report_path = ttl_report
-        report_filename = create_file_name(file_name_base=file_name, extension=TTL_EXTENSION)
+        report_filename = create_file_name(filename=file_name, file_type=TTL_EXTENSION)
 
     elif extension == HTML_EXTENSION:
         logger.debug('generate HTML report')
         prepare_eds4jinja_context(location, ttl_report)
         report_path = generate_validation_report(location)
-        report_filename = create_file_name(file_name_base=file_name, extension=HTML_EXTENSION)
+        report_filename = create_file_name(filename=file_name, file_type=HTML_EXTENSION)
 
     elif extension == ZIP_EXTENSION:
         logger.debug('generate HTML report')
         prepare_eds4jinja_context(location, ttl_report)
         shacl_html_report = generate_validation_report(location)
 
-        ttl_filename = create_file_name(file_name_base=file_name, extension=TTL_EXTENSION)
-        html_filename = create_file_name(file_name_base=file_name, extension=HTML_EXTENSION)
-        shacl_html_filename = create_file_name(file_name_base='shacl-' + file_name, extension=HTML_EXTENSION)
-        report_filename = create_file_name(file_name_base=file_name, extension=ZIP_EXTENSION)
+        ttl_filename = create_file_name(filename=file_name, file_type=TTL_EXTENSION)
+        html_filename = create_file_name(filename=file_name, file_type=HTML_EXTENSION)
+        shacl_html_filename = create_file_name(filename='shacl-' + file_name, file_type=HTML_EXTENSION)
+        report_filename = create_file_name(filename=file_name, file_type=ZIP_EXTENSION)
 
         logger.debug('zipping report')
         report_path = str(Path(location) / 'report.zip')
@@ -173,7 +173,8 @@ def create_report(location: str, html_report: str, ttl_report: str, extension: s
     return report_path, report_filename
 
 
-def build_report_from_file(location: str, data_file: str, schema_files: list, extension: str) -> tuple:
+def build_report_from_file(location: str, data_file: str, schema_files: list, extension: str,
+                           file_name: str = 'file') -> tuple:
     logger.debug('start building report from file')
 
     if config.RDF_VALIDATOR_SHACL_SHAPES_LOCATION:
@@ -187,10 +188,11 @@ def build_report_from_file(location: str, data_file: str, schema_files: list, ex
                                                  schemas=schema_files,
                                                  output=str(Path(location)) + '/')
 
-    return create_report(location, html_report, ttl_report, extension, config.RDF_VALIDATOR_FILE_NAME_BASE)
+    return create_report(location, html_report, ttl_report, extension, file_name)
 
 
-def build_report_from_sparql_endpoint(location: str, endpoint: str, graphs: list, schema_files: list, extension: str) -> tuple:
+def build_report_from_sparql_endpoint(location: str, endpoint: str, graphs: list, schema_files: list, extension: str,
+                                      file_name: str = 'file') -> tuple:
     logger.debug('start building report from sparql endpoint')
 
     if config.RDF_VALIDATOR_SHACL_SHAPES_LOCATION:
@@ -205,4 +207,4 @@ def build_report_from_sparql_endpoint(location: str, endpoint: str, graphs: list
                                                             schemas=schema_files,
                                                             output=str(Path(location)) + '/')
 
-    return create_report(location, html_report, ttl_report, extension, config.RDF_VALIDATOR_FILE_NAME_BASE)
+    return create_report(location, html_report, ttl_report, extension, file_name)
