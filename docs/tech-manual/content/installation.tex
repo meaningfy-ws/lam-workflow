@@ -114,4 +114,15 @@ To stop the services run
 docker-compose --file docker/docker-compose.yml --env-file docker/.env down
 \end{lstlisting}
 
+In case you need to rebuild and erase entirely the old containers and volumes from all services, please use the following set of commands.
+
+\begin{lstlisting}[language=bash,]
+make stop-services
+docker container rm lam-generation-service-ui lam-validator-ui lam-generation-service-api lam-validator-api lam-fuseki
+docker volume rm docker_lam-fuseki rdf-validator-shacl-shapes
+docker image prune
+docker image rm --force docker_lam-generation-service-ui docker_lam-generation-service-api docker_lam-validator-ui docker_lam-validator-api
+docker network prune
+\end{lstlisting}
+
 The detailed explanation on how to configure them is provided in the Configuration section for each of these services (See Section \ref{sec:rdf-validator-ss}).
