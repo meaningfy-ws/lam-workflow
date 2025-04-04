@@ -1,45 +1,64 @@
+# ==============================================================================
+# Define messaging
+# ==============================================================================
+
+# Begin print color
+BPC = \e[1;34m
+# End print color
+EPC = \e[0m
+
+ICON_DONE = [✔]
+ICON_ERROR = [x]
+ICON_WARNING = [!]
+ICON_PROGRESS = [-]
+
+# Usage: $(call echo_message,ICON,MESSAGE)
+define echo_message
+	@ echo -e '$(BPC)$(1) $(2) $(EPC)'
+endef
+
+# ==============================================================================
+# Define environment variables
+# ==============================================================================
+
 SHELL=/bin/bash -o pipefail
 
-include docker/.env
+PROJECT_PATH = $(shell pwd)
+ENV_FILE_PATH = $(PROJECT_PATH)/.env
+INFRA_FOLDER_PATH = $(PROJECT_PATH)/docker
 
-BUILD_PRINT = \e[1;34mSTEP: \e[0m
+PROJECT_NAME = $(notdir $(PROJECT_PATH))
 
-#-----------------------------------------------------------------------------
-# Basic commands
-#-----------------------------------------------------------------------------
+# ==============================================================================
+# Define commands
+# ==============================================================================
+.PHONY: update-env build-% start-services stop-services build-all
 
-build-volumes:
-	@ docker volume create rdf-validator-shacl-shapes
+start-services: update-env
+	@ $(call echo_message,$(ICON_PROGRESS),Starting $(PROJECT_NAME) services)
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate
+	@ $(call echo_message,$(ICON_DONE),Starting $(PROJECT_NAME) services si complete)
 
-build-%:
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d --force-recreate --build $*
+stop-services: update-env
+	@ $(call echo_message,$(ICON_PROGRESS),Stoping $(PROJECT_NAME) services)
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) stop
+	@ $(call echo_message,$(ICON_DONE),Stoping $(PROJECT_NAME) services is complete)
 
-start-services:
-	@ echo -e '$(BUILD_PRINT)(dev) Starting the containers'
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d --force-recreate --build
+update-env:
+	@ $(call echo_message,$(ICON_PROGRESS),Updating .env file)
+	@ cat .env.secrets > $(ENV_FILE_PATH)
+	@ echo PROJECT_PATH=${PROJECT_PATH} >> .env
+	@ echo ENV_FILE_PATH=${ENV_FILE_PATH} >> .env
+	@ echo INFRA_FOLDER_PATH=${INFRA_FOLDER_PATH} >> .env
+	@ echo PROJECT_NAME=${PROJECT_NAME} >> .env
+	@ $(call echo_message,$(ICON_DONE),.env file has been updated)
 
-stop-services:
-	@ echo -e '$(BUILD_PRINT)(dev) Stopping the containers'
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env stop
+build-%: update-env
+	@ $(call echo_message,$(ICON_PROGRESS),Building $(*) for $(PROJECT_NAME))
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate --build $*
+	@ $(call echo_message,$(ICON_DONE),Building $(*) completed for $(PROJECT_NAME))
 
-#-----------------------------------------------------------------------------
-# custom configuration commands
-#-----------------------------------------------------------------------------
-set-report-template:
-	@ echo "$(BUILD_PRINT)Copying custom template"
-	@ docker rm temp | true
-	@ docker volume rm rdf-validator-template | true
-	@ docker volume create rdf-validator-template
-	@ docker container create --name temp -v rdf-validator-template:/data busybox
-	@ docker cp $(location). temp:/data
-	@ docker rm temp
-
-set-shacl-shapes:
-	@ echo "$(BUILD_PRINT)Copying custom SHACL shapes"
-	@ [ "$(location)" ] || ( echo ">> template 'location' is not set"; exit 1 )
-	@ docker rm temp | true
-	@ docker volume rm rdf-validator-shacl-shapes | true
-	@ docker volume create rdf-validator-shacl-shapes
-	@ docker container create --name temp -v rdf-validator-shacl-shapes:/data busybox
-	@ docker cp $(location). temp:/data
-	@ docker rm temp
+build-all: update-env
+	@ $(call echo_message,$(ICON_PROGRESS),Building all for $(PROJECT_NAME))
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate --build
+	@ $(call echo_message,$(ICON_DONE),Building all completed for $(PROJECT_NAME))
