@@ -163,3 +163,4 @@ fuseki-lam-volume/
 reports/
 db/
 .env.secrets
+.env
