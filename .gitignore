@@ -160,3 +160,5 @@ junit_report.xml
 
 # Fuseki
 fuseki-lam-volume/
+reports/
+db/

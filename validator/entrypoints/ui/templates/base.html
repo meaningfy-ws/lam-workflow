@@ -13,8 +13,11 @@
 <body>
 <header>
     {% set navigation_bar = [
-        (url_for('validate_file'), 'validate_file', 'File'),
-        (url_for('validate_sparql_endpoint'), 'validate_sparql_endpoint', 'SPARQL Endpoint'),
+        (url_for('validate_shapes_file'), 'validate_shapes_file', 'Validate File'),
+        (url_for('validate_file_with_ap'), 'validate_file_with_ap', 'Validate File with AP'),
+        (url_for('validate_sparql_endpoint'), 'validate_sparql_endpoint', 'Validate SPARQL Endpoint'),
+        (url_for('validate_sparql_endpoint_with_ap'), 'validate_sparql_endpoint_with_ap', 'Validate SPARQL Endpoint with AP'),
+        (url_for('get_active_tasks'), 'get_active_tasks', 'List active tasks')
 ] %}
 
     {% set active_page = active_page|default('index') -%}

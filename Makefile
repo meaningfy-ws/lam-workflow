@@ -1,3 +1,5 @@
+SHELL=/bin/bash -o pipefail
+
 include docker/.env
 
 BUILD_PRINT = \e[1;34mSTEP: \e[0m
@@ -9,9 +11,12 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 build-volumes:
 	@ docker volume create rdf-validator-shacl-shapes
 
+build-%:
+	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d --force-recreate --build $*
+
 start-services:
 	@ echo -e '$(BUILD_PRINT)(dev) Starting the containers'
-	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d
+	@ docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d --force-recreate --build
 
 stop-services:
 	@ echo -e '$(BUILD_PRINT)(dev) Stopping the containers'

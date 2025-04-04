@@ -12,6 +12,8 @@ services:
       - ${RDF_VALIDATOR_API_PORT}:${RDF_VALIDATOR_API_PORT}
     env_file: .env
     restart: always
+    depends_on:
+      - rdf-validator-celery-worker
     networks:
       - mydefault
 
@@ -27,7 +29,41 @@ services:
     env_file: .env
     restart: always
     depends_on:
-      - "lam-validator-api"
+      - lam-validator-api
+    networks:
+      - mydefault
+
+  rdf-validator-celery-worker:
+    container_name: rdf-validator-celery-worker
+    build:
+      context: ..
+      dockerfile: ./docker/validator/api/Dockerfile
+    command: celery -A validator.adapters.celery.celery_worker worker #--loglevel ${RDF_VALIDATOR_LOG_LEVEL} --logfile ${RDF_VALIDATOR_CELERY_LOGS}
+    volumes:
+      - ..:/usr/src/app
+    env_file: .env
+    networks:
+      - mydefault
+    depends_on:
+      - rdf-validator-redis
+
+  rdf-validator-redis:
+    container_name: redis
+    image: redis:6-alpine
+    ports:
+      - ${RDF_VALIDATOR_REDIS_PORT}:${RDF_VALIDATOR_REDIS_PORT}
+    networks:
+      - mydefault
+
+  validator-dashboard:
+    build:
+      context: ..
+      dockerfile: ./docker/validator/api/Dockerfile
+    command: celery -A validator.adapters.celery.celery_worker --broker=${RDF_VALIDATOR_REDIS_LOCATION}:${RDF_VALIDATOR_REDIS_PORT} flower --port=${RDF_VALIDATOR_FLOWER_PORT}
+    ports:
+      - ${RDF_VALIDATOR_FLOWER_PORT}:${RDF_VALIDATOR_FLOWER_PORT}
+    depends_on:
+      - rdf-validator-celery-worker
     networks:
       - mydefault
 
@@ -63,13 +99,15 @@ services:
 
   fuseki:
     container_name: lam-fuseki
-    image: meaningfy/fuseki:latest
+    image: stain/jena-fuseki:5.1.0
     volumes:
       - lam-fuseki:/fuseki
     env_file: .env
     environment:
       - ADMIN_PASSWORD=${LAM_FUSEKI_ADMIN_PASSWORD}
       - JVM_ARGS=${LAM_FUSEKI_JVM_ARGS}
+      - FUSEKI_DATASET_2=lam
+    user: "root"
     ports:
       - ${LAM_FUSEKI_EXTERNAL_PORT}:3030
     networks:

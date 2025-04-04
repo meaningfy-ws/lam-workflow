@@ -2,7 +2,7 @@
     "template": "template.json",
     "conf":
     {
-        "endpoint": "http://srv.meaningfy.ws:3010/lam/sparql",
+        "endpoint": "http://lam-fuseki:3030/lam/query",
         "sparql_query_file" : "./templates/indexes/queries/properties.rq"
     }
 }

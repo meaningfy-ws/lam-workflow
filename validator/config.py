@@ -19,8 +19,8 @@ UI_TYPE = 'ui'
 
 
 class ValidatorConfig:
-    logger_name = 'validator'
-    logger = logging.getLogger(logger_name)
+    logger_name = 'gunicorn.error'
+    logger = logging
     type = None
 
     def set_as_api_server(self):
@@ -69,19 +69,36 @@ class ValidatorConfig:
         return value
 
     @property
-    def RDF_VALIDATOR_REPORT_TEMPLATE_LOCATION(self) -> str:
-        if os.environ.get('RDF_VALIDATOR_TEMPLATE_LOCATION') \
-                and Path(os.environ.get('RDF_VALIDATOR_TEMPLATE_LOCATION')).exists() \
-                and any(Path(os.environ.get('RDF_VALIDATOR_TEMPLATE_LOCATION')).iterdir()):
-            value = os.environ.get('RDF_VALIDATOR_TEMPLATE_LOCATION')
+    def RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION(self) -> str:
+        if os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION') \
+                and Path(os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION')).exists() \
+                and any(Path(os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION')).iterdir()):
+            value = os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION')
         else:
-            value = str(Path(__file__).parents[1] / 'resources/templates/validator_report')
+            value = str(Path(__file__).parents[1] / 'resources/templates/html')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_JSON_REPORT_TEMPLATE_LOCATION(self) -> str:
+        if os.environ.get('RDF_VALIDATOR_JSON_REPORT_TEMPLATE_LOCATION') \
+                and Path(os.environ.get('RDF_VALIDATOR_JSON_REPORT_TEMPLATE_LOCATION')).exists() \
+                and any(Path(os.environ.get('RDF_VALIDATOR_JSON_REPORT_TEMPLATE_LOCATION')).iterdir()):
+            value = os.environ.get('RDF_VALIDATOR_JSON_REPORT_TEMPLATE_LOCATION')
+        else:
+            value = str(Path(__file__).parents[1] / 'resources/templates/json')
         self.logger.debug(value)
         return value
 
     @property
     def RDF_VALIDATOR_REPORT_TITLE(self) -> Optional[str]:
         value = os.environ.get('RDF_VALIDATOR_REPORT_TITLE', 'SHACL shape validation report').strip('"')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_FILE_NAME_BASE(self) -> Optional[str]:
+        value = os.environ.get('RDF_VALIDATOR_FILE_NAME_BASE', 'validation-report').strip('"')
         self.logger.debug(value)
         return value
 
@@ -128,6 +145,93 @@ class ValidatorConfig:
     @property
     def RDF_VALIDATOR_UI_SECRET_KEY(self) -> str:
         value = os.environ.get('RDF_VALIDATOR_UI_SECRET_KEY', 'secret key api')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_TIME_FORMAT(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_TIME_FORMAT', '%d-%b-%YT%H:%M:%S')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_TIMEZONE(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_TIMEZONE', 'Europe/Paris')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_REPORT_META_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_REPORT_META_NAME', 'meta.json')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_HTML_REPORT_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_HTML_REPORT_NAME', 'report.html')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_TTL_REPORT_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_TTL_REPORT_NAME', 'report.ttl')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_CUSTOM_HTML_REPORT_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_CUSTOM_REPORT_NAME', 'custom.html')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_CUSTOM_JSON_REPORT_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_CUSTOM_JSON_REPORT_NAME', 'custom.json')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_ZIP_REPORT_NAME(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_ZIP_REPORT_NAME', 'report.zip')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def SHOW_SWAGGER_UI(self) -> bool:
+        value = strtobool(os.environ.get('SHOW_SWAGGER_UI', 'true'))
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_REDIS_SERVICE(self) -> str:
+        location = os.environ.get('RDF_VALIDATOR_REDIS_LOCATION', 'redis://redis')
+        port = os.environ.get('RDF_VALIDATOR_REDIS_PORT', 6379)
+        value = f'{location}:{port}'
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_RDFUNIT_LOCATION(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_RDFUNIT_LOCATION',
+                               Path(__file__).parents[2] / 'rdfunit/rdfunit-validate.jar')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_APS_LOCATION(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_APS_LOCATION', Path(__file__).parents[1] / 'resources/shacl-shapes')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_FILE_DB(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_FILE_DB', str(Path(__file__).parents[1] / 'db'))
+        self.logger.debug(value)
+        return value
+
+    @property
+    def RDF_VALIDATOR_REPORTS_DB(self) -> str:
+        value = os.environ.get('RDF_VALIDATOR_REPORTS_DB', str(Path(__file__).parents[1] / 'reports'))
         self.logger.debug(value)
         return value
 

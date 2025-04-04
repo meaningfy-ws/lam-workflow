@@ -1,0 +1,12 @@
+{
+    "template": "main.json",
+    "conf":
+    {
+        "title": "SHACL shape validation report",
+        "type": "report",
+        "author": "Meaningfy",
+        "ns_file": "data/prefix.csv",
+        "report_data_file": "../../tests/test-data/test-shaclTestCaseResult.ttl",
+        "query_file": "resources/templates/query/validator_query.rq"
+    }
+}
