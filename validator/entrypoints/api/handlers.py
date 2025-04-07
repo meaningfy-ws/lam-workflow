@@ -65,26 +65,15 @@ def validate_file_with_ap(body: dict, data_file: FileStorage) -> tuple:
     logger.debug('start validate file endpoint')
     application_profile = body.get('application_profile')
     apm = ApplicationProfileManager(application_profile=application_profile)
-    logger.debug("==============================-=-=-=====================")
-    logger.debug("==============================-=-=-=====================")
-    logger.debug("==============================-=-=-=====================")
     try:
-        logger.debug("------------------------1-----------------------")
         schema_files = apm.list_ap_files_paths()
-        logger.debug("--------------------------2---------------------")
     except LookupError as e:
-        logger.debug("------------------------3-----------------------")
         logger.exception(str(e))
-        logger.debug("------------------------4-----------------------")
         raise NotAcceptable(str(e))  # 500
 
     filenames = [Path(shape_path).name for shape_path in schema_files]
     filenames.append(data_file.filename)
-    logger.debug("------------------------21-----------------------")
     check_for_file_exceptions(schema_files, filenames)
-    logger.debug("------------------------22-----------------------")
-    logger.debug("-----------------------------------------------")
-    logger.debug("-----------------------------------------------")
     saved_location, save_file_to_validate, _ = save_data_for_validation(file_to_validate=data_file,
                                                                         shacl_shapes=[],
                                                                         location=config.RDF_VALIDATOR_FILE_DB)
