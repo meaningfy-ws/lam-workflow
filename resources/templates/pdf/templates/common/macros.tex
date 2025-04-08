@@ -27,7 +27,7 @@
         %- set values = result_set[property_id].dropna() 
         %- if not values.empty
             \paragraph*{\VAR{ property_label } }
-                %- for idx, item in values.iteritems()
+                %- for idx, item in values.items()
                     \VAR{ item|replace("\n","
                     "|escape_latex) }
                 %- endfor
@@ -42,7 +42,7 @@
         %- set values =  result_set[property_id].dropna() 
         %- if not values.empty 
             \paragraph*{\VAR{ property_label } }
-            %- for idx, item in values.iteritems()
+            %- for idx, item in values.items()
                 %- if link_label_property_id is none
                     \hyperref[sec:\VAR{ item }]{ \VAR{ item|replace("\\n","
                     "|escape_latex) } }
@@ -76,7 +76,7 @@
         %- set values = result_set[property_id].dropna() 
         %- if not values.empty 
             \VAR{ label + " " }
-            %- for idx, item in values.iteritems() 
+            %- for idx, item in values.items()
                 \hyperref[\VAR{ '' if external else 'sec:' }\VAR{ item }]{ \VAR{ item|replace("\\n","
                     "|escape_latex) } }
             %- endfor 

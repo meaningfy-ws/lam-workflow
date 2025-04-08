@@ -34,12 +34,17 @@ PROJECT_NAME = $(notdir $(PROJECT_PATH))
 # ==============================================================================
 # Define commands
 # ==============================================================================
-.PHONY: update-env build-% start-services stop-services build-all
+.PHONY: update-env build-% start-services stop-services build-all check-uv start-%
 
-start-services: update-env
+start-services: build-all
 	@ $(call echo_message,$(ICON_PROGRESS),Starting $(PROJECT_NAME) services)
 	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate
 	@ $(call echo_message,$(ICON_DONE),Starting $(PROJECT_NAME) services si complete)
+
+start-%: build-%
+	@ $(call echo_message,$(ICON_PROGRESS),Starting $(PROJECT_NAME) $* service)
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up $* -d --force-recreate
+	@ $(call echo_message,$(ICON_DONE),Starting $(PROJECT_NAME) $* service si complete)
 
 stop-services:
 	@ $(call echo_message,$(ICON_PROGRESS),Stoping $(PROJECT_NAME) services)
@@ -49,8 +54,8 @@ stop-services:
 update-requirements: check-uv
 	@ $(call echo_message,$(ICON_PROGRESS),Updating $(PROJECT_NAME) requirements)
 	@ uv sync
-	@ uv export -o $(REQUIREMENTS_FOLDER_PATH)/common.txt --no-group dev --no-group docs --no-binary --no-build --no-cache --no-header --quiet --no-hashes
-	@ uv export -o $(REQUIREMENTS_FOLDER_PATH)/dev.txt --all-groups --no-binary --no-build --no-cache --no-header --quiet --no-hashes
+	@ uv export -o $(REQUIREMENTS_FOLDER_PATH)/common.txt --no-group dev --no-group docs --no-cache --no-header --quiet --no-hashes
+	@ uv export -o $(REQUIREMENTS_FOLDER_PATH)/dev.txt --all-groups --no-cache --no-header --quiet --no-hashes
 	@ $(call echo_message,$(ICON_DONE),Requirements for $(PROJECT_NAME) services are updated)
 
 check-uv:
@@ -71,12 +76,12 @@ update-env:
 	@ echo PROJECT_NAME=${PROJECT_NAME} >> $(ENV_FILE_PATH)
 	@ $(call echo_message,$(ICON_DONE),.env file has been updated)
 
-build-%: update-env
+build-%: update-env update-requirements
 	@ $(call echo_message,$(ICON_PROGRESS),Building $(*) for $(PROJECT_NAME))
-	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate --build $*
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) build $*
 	@ $(call echo_message,$(ICON_DONE),Building $(*) completed for $(PROJECT_NAME))
 
-build-all: update-env
+build-all: update-env update-requirements
 	@ $(call echo_message,$(ICON_PROGRESS),Building all for $(PROJECT_NAME))
-	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) up -d --force-recreate --build
+	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) build
 	@ $(call echo_message,$(ICON_DONE),Building all completed for $(PROJECT_NAME))

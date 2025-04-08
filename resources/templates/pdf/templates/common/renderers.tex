@@ -58,7 +58,7 @@
         %- endif
         %- if not values.empty
             \paragraph*{\VAR{ property_label } }%\mbox{}\\
-                %- for idx, item in values.iteritems()
+                %- for idx, item in values.items()
 \noindent \VAR{ item|escape_latex|replace("\n","
 ") } \mbox{}\\
                 %- endfor
@@ -74,7 +74,7 @@
         %- set values = values.apply(namespaces.uri_to_qname)
         %- if not values.empty
             \paragraph*{\VAR{ property_label } } %\mbox{}\\
-            %- for idx, item in values.iteritems()
+            %- for idx, item in values.items()
                 %- if link_label_property_id is none
 \noindent\hyperref[sec:\VAR{ item }]{ \VAR{ item|escape_latex } } \mbox{}\\
                 %- else
@@ -93,7 +93,7 @@
         %- set values = result_set[property_id].dropna()
         %- if not values.empty
 \paragraph*{\VAR{ property_label } } %\mbox{}\\
-                %- for idx, item in values.iteritems()
+                %- for idx, item in values.items()
 \begin{lstlisting}[language=\VAR{listing_language}]
 \VAR{ item | trim }
 \end{lstlisting} \mbox{}\\

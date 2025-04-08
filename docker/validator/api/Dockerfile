@@ -7,7 +7,7 @@ WORKDIR /RDFUnit-master
 RUN mvn -pl rdfunit-validate -am clean package -P cli-standalone -DskipTests=true
 
 # Build for python API
-FROM python:3.8.5-buster as target
+FROM python:3.11.11-bullseye as target
 
 RUN apt-get update -y \
 && apt-get upgrade -y \
@@ -23,7 +23,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install -r requirements/common.txt
 
 #ENV RDF_VALIDATOR_SHACL_SHAPES_LOCATION=/usr/src/shacl-shapes
 
