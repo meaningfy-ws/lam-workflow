@@ -1,9 +1,10 @@
 # Build RDFUnit
 FROM maven:3-jdk-8 as build
 
-RUN curl https://codeload.github.com/AKSW/RDFUnit/zip/master --output rdfunit-sources.zip
+ARG RDFUNIT_VERSION=0.8.23
+RUN curl https://codeload.github.com/AKSW/RDFUnit/zip/refs/tags/v${RDFUNIT_VERSION} --output rdfunit-sources.zip
 RUN unzip rdfunit-sources.zip
-WORKDIR /RDFUnit-master
+WORKDIR /RDFUnit-${RDFUNIT_VERSION}
 RUN mvn -pl rdfunit-validate -am clean package -P cli-standalone -DskipTests=true
 
 # Build for python API
@@ -14,7 +15,7 @@ RUN apt-get update -y \
 && apt-get install -y openjdk-11-jre
 
 WORKDIR /usr/src/rdfunit
-COPY --from=build /RDFUnit-master/rdfunit-validate/target/rdfunit-validate-*-standalone.jar /usr/src/rdfunit/rdfunit-validate.jar
+COPY --from=build /RDFUnit-*/rdfunit-validate/target/rdfunit-validate-*-standalone.jar /usr/src/rdfunit/rdfunit-validate.jar
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
