@@ -71,7 +71,7 @@ For usage examples check  the **Usage** chapter from the [tech-manual.pdf](docs/
 * `README.md` - this file
 
 # Services and their respective configurations
-Please note that the configured values can be changed by modifying the [`/docker/.env`](./docker/.env) file.
+Please note that the configured values can be changed by modifying the [`/docker/.env`](.env) file.
 
 ### LAM Validator API
 

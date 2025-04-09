@@ -80,13 +80,13 @@ class LAMConfig:
 
     @property
     def LAM_HTML_REPORT_TEMPLATE_LOCATION(self) -> str:
-        value = str(Path(__file__).parents[1] / 'templates/html')
+        value = str(Path(__file__).parents[1] / 'resources/templates/html')
         self.logger.debug(value)
         return value
 
     @property
     def LAM_PDF_REPORT_TEMPLATE_LOCATION(self) -> str:
-        value = str(Path(__file__).parents[1] / 'templates/pdf')
+        value = str(Path(__file__).parents[1] / 'resources/templates/pdf')
         self.logger.debug(value)
         return value
 
@@ -98,7 +98,7 @@ class LAMConfig:
 
     @property
     def LAM_INDEXES_TEMPLATE_LOCATION(self) -> str:
-        value = str(Path(__file__).parents[1] / 'templates/indexes')
+        value = str(Path(__file__).parents[1] / 'resources/templates/indexes')
         self.logger.debug(value)
         return value
 

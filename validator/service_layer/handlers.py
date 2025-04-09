@@ -7,22 +7,19 @@
 
 """ """
 import json
-import logging
+import logging as logger
 import pathlib
 from distutils.dir_util import copy_tree
 from pathlib import Path
+from shutil import copytree
 from typing import List, Union
 from urllib.parse import urlparse
-from zipfile import ZipFile
 
 from eds4jinja2.builders.report_builder import ReportBuilder
+from werkzeug.exceptions import UnprocessableEntity
 
 from validator.adapters.validator_wrapper import AbstractValidatorWrapper, RDFUnitWrapper
 from validator.config import config
-from validator.entrypoints.api.helpers import TTL_EXTENSION, HTML_EXTENSION, ZIP_EXTENSION
-from validator.service_layer.helpers import create_file_name, get_custom_shacl_shape_files, SHACLShapesMissing
-
-logger = logging.getLogger(config.RDF_VALIDATOR_LOGGER)
 
 
 def __copy_static_content(configuration_context: dict) -> None:
@@ -31,7 +28,7 @@ def __copy_static_content(configuration_context: dict) -> None:
     :rtype: None
     """
     if pathlib.Path(configuration_context["static_folder"]).is_dir():
-        copy_tree(configuration_context["static_folder"], configuration_context["output_folder"])
+        copytree(configuration_context["static_folder"], configuration_context["output_folder"])
     else:
         logger.warning(configuration_context["static_folder"] + " is not a directory !")
 
@@ -51,7 +48,7 @@ def run_file_validator(data_file: str, schemas: List[str], output: Union[str, Pa
     logger.debug("RDFUnitWrapper starting ...")
     validator_wrapper: AbstractValidatorWrapper
     validator_wrapper = RDFUnitWrapper("java")
-    cli_output = validator_wrapper.execute_subprocess("-jar", "/usr/src/rdfunit/rdfunit-validate.jar",
+    cli_output = validator_wrapper.execute_subprocess("-jar", config.RDF_VALIDATOR_RDFUNIT_LOCATION,
                                                       "-d", data_file,
                                                       "-u", data_file,
                                                       "-s", ", ".join([schema for schema in schemas]),
@@ -91,7 +88,7 @@ def run_sparql_endpoint_validator(sparql_endpoint_url: str, graphs_uris: List[st
     else:
         graph_param = ", ".join([graph for graph in graphs_uris])
 
-    cli_output = validator_wrapper.execute_subprocess("-jar", "/usr/src/rdfunit/rdfunit-validate.jar",
+    cli_output = validator_wrapper.execute_subprocess("-jar", config.RDF_VALIDATOR_RDFUNIT_LOCATION,
                                                       "-d", sparql_endpoint_url,
                                                       "-e", sparql_endpoint_url,
                                                       "-s", ", ".join([schema for schema in schemas]),
@@ -110,101 +107,30 @@ def run_sparql_endpoint_validator(sparql_endpoint_url: str, graphs_uris: List[st
     return str(output_file_path) + ".html", str(output_file_path) + ".ttl"
 
 
-def generate_validation_report(path_to_report: Union[str, Path]) -> str:
+def build_report(temp_dir: str, template_location: str, additional_config: dict):
     """
-        Generate the jinja HTML report.
-        Warning: we have to decide what will be the report sources.
-        Possibilities: (a) either write a new DataSourceAdapter in the eds4jinja project or
-                       (b) use a temporary Fuseki instance,w here the validation report is
-                       loaded and the report is generated from there.  (For this we have to write a Fuseki adapter)
-    :param path_to_report: the location of the template file(s) that will be used to render the output
-    :return: path to the html report
+    :param temp_dir: location to temporarily save the report
+    :param template_location: report location
+    :param application_profile: application profile for report identification
+    :param dataset_id: dataset name
+    :param dataset: data about dataset
+    :param timestamp: time of report creation
+    :param source_file: ttl file
+    :return:
     """
-    report_builder = ReportBuilder(path_to_report,
-                                   additional_config={'conf': {'title': config.RDF_VALIDATOR_REPORT_TITLE}})
-    report_builder.add_after_rendering_listener(__copy_static_content)
+    logger.debug(f'template location {template_location}')
+
+    copy_tree(template_location, temp_dir)
+
+    try:
+        with open(Path(temp_dir) / 'config.json', 'r') as config_file:
+            config_content = json.load(config_file)
+
+        logger.debug(f'template file {config_content["template"]}')
+    except FileNotFoundError as e:
+        logger.exception(str(e))
+        raise UnprocessableEntity("config.json file is missing from the chosen template variant folder")
+
+    report_builder = ReportBuilder(target_path=temp_dir, additional_config=additional_config)
     report_builder.make_document()
-    return str(path_to_report) + "/output/" + "main.html"
-
-
-def prepare_eds4jinja_context(report_path, source_file):
-    logger.debug(f"Building with template location: {config.RDF_VALIDATOR_REPORT_TEMPLATE_LOCATION}")
-    copy_tree(config.RDF_VALIDATOR_REPORT_TEMPLATE_LOCATION, report_path)
-
-    with open(Path(report_path) / "config.json", 'r+') as config_file:
-        config_data = json.load(config_file)
-        config_data["conf"]["report_data_file"] = source_file
-        logger.debug(config_data)
-        config_file.seek(0)
-        json.dump(config_data, config_file)
-        config_file.truncate()
-
-
-def create_report(location: str, html_report: str, ttl_report: str, extension: str, file_name: str):
-    logger.debug(f'start creating report with extension {extension}')
-    if extension == TTL_EXTENSION:
-        report_path = ttl_report
-        report_filename = create_file_name(filename=file_name, file_type=TTL_EXTENSION)
-
-    elif extension == HTML_EXTENSION:
-        logger.debug('generate HTML report')
-        prepare_eds4jinja_context(location, ttl_report)
-        report_path = generate_validation_report(location)
-        report_filename = create_file_name(filename=file_name, file_type=HTML_EXTENSION)
-
-    elif extension == ZIP_EXTENSION:
-        logger.debug('generate HTML report')
-        prepare_eds4jinja_context(location, ttl_report)
-        shacl_html_report = generate_validation_report(location)
-
-        ttl_filename = create_file_name(filename=file_name, file_type=TTL_EXTENSION)
-        html_filename = create_file_name(filename=file_name, file_type=HTML_EXTENSION)
-        shacl_html_filename = create_file_name(filename='shacl-' + file_name, file_type=HTML_EXTENSION)
-        report_filename = create_file_name(filename=file_name, file_type=ZIP_EXTENSION)
-
-        logger.debug('zipping report')
-        report_path = str(Path(location) / 'report.zip')
-        with ZipFile(report_path, 'w') as zip_report:
-            zip_report.write(html_report, arcname=html_filename)
-            zip_report.write(shacl_html_report, arcname=shacl_html_filename)
-            zip_report.write(ttl_report, arcname=ttl_filename)
-
-    logger.debug(f'finish creating report with extension {extension}')
-    return report_path, report_filename
-
-
-def build_report_from_file(location: str, data_file: str, schema_files: list, extension: str,
-                           file_name: str = 'file') -> tuple:
-    logger.debug('start building report from file')
-
-    if config.RDF_VALIDATOR_SHACL_SHAPES_LOCATION:
-        schema_files += get_custom_shacl_shape_files()
-    if not schema_files:
-        exception_text = f'No SHACL shape files provided for validation'
-        logger.exception(exception_text)
-        raise SHACLShapesMissing(exception_text)
-
-    html_report, ttl_report = run_file_validator(data_file=data_file,
-                                                 schemas=schema_files,
-                                                 output=str(Path(location)) + '/')
-
-    return create_report(location, html_report, ttl_report, extension, file_name)
-
-
-def build_report_from_sparql_endpoint(location: str, endpoint: str, graphs: list, schema_files: list, extension: str,
-                                      file_name: str = 'file') -> tuple:
-    logger.debug('start building report from sparql endpoint')
-
-    if config.RDF_VALIDATOR_SHACL_SHAPES_LOCATION:
-        schema_files += get_custom_shacl_shape_files()
-    if not schema_files:
-        exception_text = f'No SHACL shape files provided for validation'
-        logger.exception(exception_text)
-        raise SHACLShapesMissing(exception_text)
-
-    html_report, ttl_report = run_sparql_endpoint_validator(sparql_endpoint_url=endpoint,
-                                                            graphs_uris=graphs,
-                                                            schemas=schema_files,
-                                                            output=str(Path(location)) + '/')
-
-    return create_report(location, html_report, ttl_report, extension, file_name)
+    return Path(str(temp_dir)) / f'output/{config_content["template"]}'

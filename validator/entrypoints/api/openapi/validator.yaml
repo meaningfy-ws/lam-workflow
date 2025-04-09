@@ -21,21 +21,16 @@ servers:
     description: Default development server
 
 paths:
-  /validate-file:
+  /validate/shapes/file:
     post:
-      operationId: validator.entrypoints.api.handlers.validate_file
+      operationId: validator.entrypoints.api.handlers.validate_file_with_shacl
       description: Validate a an RDF file with the provided SHACL shapes.
-      parameters:
-        - name: report_extension
-          in: query
-          schema:
-            type: string
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/FileValidator'
+              $ref: '#/components/schemas/SHACLFileDataFileValidator'
       responses:
         200:
           description: Request to validate endpoint successfully accepted for processing
@@ -47,52 +42,16 @@ paths:
           description: Wrong report extension format
         5XX:
           description: Unexpected Error
-  /validate-sparql-endpoint:
+  /validate/ap/file:
     post:
-      operationId: validator.entrypoints.api.handlers.validate_sparql_endpoint
-      description: Validate a sparql endpoint with the provided SHACL shapes and optionally restricted to provided graphs.
-      parameters:
-        - name: report_extension
-          in: query
-          schema:
-            type: string
+      operationId: validator.entrypoints.api.handlers.validate_file_with_ap
+      description: Validate an endpoint with the provided SHACL shapes.
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                schema_file0:
-                  type: string
-                  format: binary
-                  description: The content of the SHACL shape file defining the validation constraints
-                schema_file1:
-                  type: string
-                  format: binary
-                  description: The content of the SHACL shape file defining the validation constraints
-                schema_file2:
-                  type: string
-                  format: binary
-                  description: The content of the SHACL shape file defining the validation constraints
-                schema_file3:
-                  type: string
-                  format: binary
-                  description: The content of the SHACL shape file defining the validation constraints
-                schema_file4:
-                  type: string
-                  format: binary
-                  description: The content of the SHACL shape file defining the validation constraints
-                graphs:
-                  type: array
-                  description: An optional list of named graphs to restrict the scope of the validation
-                  items:
-                    type: string
-                sparql_endpoint_url:
-                  type: string
-                  description: The endpoint to validate
-              required:
-                - sparql_endpoint_url
+              $ref: '#/components/schemas/ApplicationProfileDataFileValidator'
       responses:
         200:
           description: Request to validate endpoint successfully accepted for processing
@@ -104,12 +63,191 @@ paths:
           description: Wrong report extension format
         5XX:
           description: Unexpected Error
+    description: Unexpected Error
+  /validate/shapes/url:
+    post:
+      operationId: validator.entrypoints.api.handlers.validate_sparql_endpoint_with_shacl
+      description: Validate a sparql endpoint with the provided SHACL shapes and optionally restricted to provided graphs.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SHACLFileURLValidator'
+      responses:
+        200:
+          description: Request to validate endpoint successfully accepted for processing
+        400:
+          description: This configuration of the validator doesn't accept external SHACL shapes
+        415:
+          description: Unacceptable file types
+        422:
+          description: Wrong report extension format
+        5XX:
+          description: Unexpected Error
+  /validate/ap/url:
+    post:
+      operationId: validator.entrypoints.api.handlers.validate_sparql_endpoint_with_ap
+      description: Validate a sparql endpoint with the provided SHACL shapes and optionally restricted to provided graphs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationProfileURLValidator'
+      responses:
+        200:
+          description: Request to validate endpoint successfully accepted for processing
+        400:
+          description: This configuration of the validator doesn't accept external SHACL shapes
+        415:
+          description: Unacceptable file types
+        422:
+          description: Wrong report extension format
+        5XX:
+          description: Unexpected Error
+  /validations:
+    get:
+      operationId: validator.entrypoints.api.handlers.get_validations
+      description: Get validation runs with their metadata.
+      responses:
+        200:
+          description: Validation details succesfully retreived.
+          content:
+            application/json:
+              schema:
+                type: array
+        5XX:
+          description: Unexpected Error.
+  /validations/{uid}:
+    get:
+      operationId: validator.entrypoints.api.handlers.get_validation
+      description: Get report of a specific validation.
+      parameters:
+        - in: query
+          name: report_type
+          required: true
+          allowEmptyValue: False
+          description: Report type
+          schema:
+            type: string
+        - name: uid
+          in: path
+          required: true
+          description: Validation id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Validation report succesfully retreived.
+          content:
+            text/html:
+              schema:
+                type: string
+                format: binary
+        5XX:
+          description: Unexpected Error.
+    delete:
+      operationId: validator.entrypoints.api.handlers.delete_validation
+      description: delete validation reports
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: Validation id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully removed validation reports
+        404:
+          description: Validation doesn't exist
+  /remove-reports:
+    delete:
+      operationId: validator.entrypoints.api.handlers.delete_validations
+      description: delete all reports
+      responses:
+        200:
+          description: Successfully removed all validation reports
+        4XX:
+          description: Unexpected Error.
+  /aps:
+    get:
+      operationId: validator.entrypoints.api.handlers.get_application_profiles_details
+      description: Get application profiles names and their validation files.
+      responses:
+        200:
+          description: Application profiles details succesfully retreived.
+          content:
+            application/json:
+              schema:
+                type: array
+        5XX:
+          description: Unexpected Error.
+  /tasks/active:
+    get:
+      operationId: validator.entrypoints.api.handlers.get_active_tasks
+      description: Get status of a task
+      responses:
+        200:
+          description: Task status description succesfully retreived.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskStatus"
 
+  /tasks/{task_id}:
+    get:
+      operationId: validator.entrypoints.api.handlers.get_task_status
+      description: Get status of a task
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: task id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Task status description succesfully retreived.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskStatus"
+    delete:
+      operationId: validator.entrypoints.api.handlers.stop_running_task
+      description: cancel execution  status of a task
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: task id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Task accepted for revoking.
+        406:
+          description: Task already marked for revoking.
 components:
   schemas:
-    GenericValidator:
+    ApplicationProfileDataFileValidator:
       type: object
-      description: Base "class" for defining validator api structure
+      description: Application profile file validation
+      properties:
+        application_profile:
+          type: string
+          description: The application profile selected for validation
+        data_file:
+          type: string
+          format: binary
+          description: The data content to validate
+      required:
+        - application_profile
+        - data_file
+    SHACLFileDataFileValidator:
+      type: object
+      description: SHACL shapes file validation
       properties:
         schema_file0:
           type: string
@@ -131,16 +269,74 @@ components:
           type: string
           format: binary
           description: The content of the SHACL shape file defining the validation constraints
-    FileValidator:
+        data_file:
+          type: string
+          format: binary
+          description: The data content to validate
+      required:
+        - data_file
+    ApplicationProfileURLValidator:
       type: object
-      description: File validator
-      allOf:
-        - $ref: '#/components/schemas/GenericValidator'
-        - type: object
-          properties:
-            data_file:
-              type: string
-              format: binary
-              description: The data content to validate
-          required:
-            - data_file
+      description: Application profile file validation
+      properties:
+        application_profile:
+          type: string
+          description: The application profile selected for validation
+        sparql_endpoint_url:
+          type: string
+          description: The endpoint to validate
+        graphs:
+          type: array
+          description: An optional list of named graphs to restrict the scope of the validation
+          items:
+            type: string
+      required:
+        - application_profile
+        - sparql_endpoint_url
+    SHACLFileURLValidator:
+      type: object
+      description: SHACL shapes file validation
+      properties:
+        schema_file0:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file1:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file2:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file3:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        schema_file4:
+          type: string
+          format: binary
+          description: The content of the SHACL shape file defining the validation constraints
+        sparql_endpoint_url:
+          type: string
+          description: The endpoint to validate
+        graphs:
+          type: array
+          description: An optional list of named graphs to restrict the scope of the validation
+          items:
+            type: string
+      required:
+        - sparql_endpoint_url
+    TaskStatus:
+      type: object
+      description: A description of a task status response.
+      properties:
+        task_id:
+          type: string
+          description: The task identifier.
+        task_status:
+          type: string
+          description: The task status.
+        task_result:
+          type: string
+          description: The task result.

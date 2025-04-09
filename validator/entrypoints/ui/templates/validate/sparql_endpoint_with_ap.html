@@ -13,10 +13,9 @@
 
         {{ form.csrf_token }}
         {{ macros.render_text_input_field(form.endpoint_url) }}
-        {% if render_shacl_shapes %}
-            {{ macros.render_upload_input_field(form.schema_files) }}
-        {% endif %}
+
         {{ macros.render_text_area_field(form.graphs) }}
+        {{ macros.render_radio_buttons_field(form.application_profile) }}
 
         <div class="row" style="margin-top: 4em;">
             <div class="col s12 right-align">

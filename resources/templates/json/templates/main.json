@@ -1,0 +1,13 @@
+
+    {% set result_set, error = from_rdf_file(conf.report_data_file).with_query_from_file(conf.query_file).fetch_tabular() %}
+    {% if error %}
+    {"error": "{{ error|replace('"',"'") }}"}
+    {% else %}
+        {% if result_set is undefined %}
+    {"result": "Some content expected but none was found."}
+        {% else %}
+    {% set json_result_set = result_set.to_json(orient='records') %}
+            {{ json_result_set }}
+        {% endif %}
+    {% endif %}
+
