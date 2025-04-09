@@ -16,9 +16,6 @@ info:
     url: https://www.gnu.org/licenses/gpl-3.0.en.html
   version: 1.0.1
 
-servers:
-  - url: 'http://localhost:4010/'
-    description: Default development server
 
 paths:
   /validate/shapes/file:

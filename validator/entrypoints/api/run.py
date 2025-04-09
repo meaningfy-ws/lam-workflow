@@ -10,20 +10,28 @@ Production API server through connexion definitions.
 """
 import logging
 
+import connexion
+from flask import Flask
+
 from validator.config import ProductionConfig, DevelopmentConfig, config
-from validator.entrypoints.api import app
+
+app = connexion.FlaskApp(__name__, specification_dir='openapi/')
+
+flask_app: Flask = app.app
 
 if config.RDF_VALIDATOR_DEBUG:
-    app.config.from_object(DevelopmentConfig())
+    flask_app.config.from_object(DevelopmentConfig())
 else:
-    app.config.from_object(ProductionConfig())
+    flask_app.config.from_object(ProductionConfig())
 
 config.set_as_api_server()
+
+app.add_api('validator.yaml')
 
 if __name__ == '__main__':
     app.run()
 
 if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    flask_app.logger.handlers = gunicorn_logger.handlers
+    flask_app.logger.setLevel(gunicorn_logger.level)

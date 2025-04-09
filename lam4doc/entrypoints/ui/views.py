@@ -1,13 +1,5 @@
 #!/usr/bin/python3
 
-# views.py
-# Date:  03/11/2020
-# Author: Mihai Coșleț
-# Email: coslet.mihai@gmail.com 
-
-"""
-UI pages
-"""
 import logging
 import tempfile
 from json import loads
@@ -15,13 +7,13 @@ from pathlib import Path
 
 from flask import render_template, send_from_directory, flash
 
-from lam4doc.config import config, HTML_REPORT_TYPE, ZIP_REPORT_TYPE
+from lam4doc.config import HTML_REPORT_TYPE, ZIP_REPORT_TYPE
 from lam4doc.entrypoints.ui import app
 from lam4doc.entrypoints.ui.api_wrapper import get_lam_report as api_get_lam_report, get_indexes as api_get_indexes, \
     get_lam_files as api_get_lam_files, upload_rdf as api_upload_rdf
 from lam4doc.entrypoints.ui.forms import ReportTypeForm, UploadRDFFilesForm
 
-logger = logging.getLogger(config.LAM_LOGGER)
+logger = logging.getLogger(__file__)
 
 
 def get_error_message_from_response(response):
@@ -37,17 +29,14 @@ def index():
 
 @app.route('/lam-report', methods=['GET', 'POST'])
 def download_lam_report():
-    logger.debug('request LAM report view')
-
     form = ReportTypeForm()
 
     if form.validate_on_submit():
         response, status = api_get_lam_report(form.report_extension.data)
 
         if status != 200:
-            exception_text = get_error_message_from_response(response)
-            logger.exception(exception_text)
-            flash(exception_text, 'error')
+            logging.exception(response)
+            flash(response, 'error')
         else:
             try:
                 with tempfile.TemporaryDirectory() as temp_folder:
@@ -106,7 +95,7 @@ def download_lam_files():
 
 @app.route('/upload-rdf', methods=['GET', 'POST'])
 def upload_rdf():
-    logger.debug('request upload RDFs view')
+    logging.info('request upload RDFs view')
 
     form = UploadRDFFilesForm()
 
@@ -117,16 +106,13 @@ def upload_rdf():
             lam_classes_document=form.lam_classes_document.data,
             celex_classes_document=form.celex_classes_document.data
         )
-
         if status != 200:
-            exception_text = get_error_message_from_response(response)
-            logger.exception(exception_text)
-            flash(exception_text, 'error')
+            logging.info(response)
+            flash(response, 'error')
         else:
-            logger.debug('upload successful')
             flash('File upload successful', 'success')
             form = UploadRDFFilesForm()
             return render_template('upload_rdf.html', form=form, title='Upload RDF Files')
 
-    logger.debug('upload RDFs clean view')
+    logging.debug('upload RDFs clean view')
     return render_template('upload_rdf.html', form=form, title='Upload RDF Files')
