@@ -76,12 +76,12 @@ update-env:
 	@ echo PROJECT_NAME=${PROJECT_NAME} >> $(ENV_FILE_PATH)
 	@ $(call echo_message,$(ICON_DONE),.env file has been updated)
 
-build-%: update-env update-requirements
+build-%:
 	@ $(call echo_message,$(ICON_PROGRESS),Building $(*) for $(PROJECT_NAME))
 	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) build $*
 	@ $(call echo_message,$(ICON_DONE),Building $(*) completed for $(PROJECT_NAME))
 
-build-all: update-env update-requirements
+build-all:
 	@ $(call echo_message,$(ICON_PROGRESS),Building all for $(PROJECT_NAME))
 	@ docker-compose --file $(INFRA_FOLDER_PATH)/docker-compose.yml --env-file $(ENV_FILE_PATH) build
 	@ $(call echo_message,$(ICON_DONE),Building all completed for $(PROJECT_NAME))
