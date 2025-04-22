@@ -20,24 +20,23 @@
                 <tr>
                     <th scope="row">{{ validation.uid }}</th>
                     <td>{{ validation.type }}</td>
-                    <td>{{ validation.file }}</td>
+                    <td>{% if validation.file|length > 40 %}...{{ validation.file[-40:] }}{% else %}{{ validation.file }}{% endif %}</td>
                     <td>{{ validation.created_at }}</td>
                     <td>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='html') }}"
-                           id="get-html-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get Custom HTML report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='json') }}"
-                           id="get-html-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get Custom JSON report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='ttl') }}"
-                           id="get-ttl-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get TTL report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='zip') }}"
-                           id="get-zip-{{ validation.uid }}"
-                           class="btn btn-file blue darken-2">Get all files</a>
+                        <div class="button-row" style="display: flex; flex-direction: column; flex-wrap: wrap; gap: 5px;">
+                            <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='html') }}"
+                               id="get-html-{{ validation.uid }}"
+                               class="btn btn-file blue darken-2 btn-small">Get Custom HTML report</a>
+                            <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='json') }}"
+                               id="get-json-{{ validation.uid }}"
+                               class="btn btn-file blue darken-2 btn-small">Get Custom JSON report</a>
+                            <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='ttl') }}"
+                               id="get-ttl-{{ validation.uid }}"
+                               class="btn btn-file blue darken-2 btn-small">Get TTL report</a>
+                            <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='zip') }}"
+                               id="get-zip-{{ validation.uid }}"
+                               class="btn btn-file blue darken-2 btn-small">Get all reports</a>
+                        </div>
                     </td>
                     <td>
                         <a href="{{ url_for('delete_validation', validation_id=validation.uid) }}"
