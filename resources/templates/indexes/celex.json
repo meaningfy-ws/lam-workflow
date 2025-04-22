@@ -3,6 +3,6 @@
     "conf":
     {
         "endpoint": "http://lam-fuseki:3030/lam/sparql",
-        "sparql_query_file" : "./templates/indexes/queries/celex.rq"
+        "sparql_query_file" : "/usr/src/app/resources/templates/indexes/queries/celex.rq"
     }
 }

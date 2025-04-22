@@ -3,6 +3,6 @@
     "conf":
     {
         "endpoint": "http://lam-fuseki:3030/lam/query",
-        "sparql_query_file" : "./templates/indexes/queries/classes.rq"
+        "sparql_query_file" : "/usr/src/app/resources/templates/indexes/queries/classes.rq"
     }
 }

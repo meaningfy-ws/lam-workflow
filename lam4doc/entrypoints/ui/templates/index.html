@@ -4,13 +4,27 @@
 
 {% block app_content %}
     <h1 id="title">{{ title }}</h1>
-    <a href="{{ url_for('download_lam_report') }}"
-       id="LAM-report"
-       class="btn btn-file blue darken-2">Generate LAM Report<i class="material-icons right">file_download</i></a>
-    <a href="{{ url_for('download_lam_files') }}"
-       id="LAM-files"
-       class="btn btn-file green darken-1">Generate all LAM files<i class="material-icons right">file_download</i></a>
-    <a href="{{ url_for('download_indexes') }}"
-       id="LAM-indexes"
-       class="btn btn-file purple darken-1">Generate LAM Indexes<i class="material-icons right">file_download</i></a>
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('download_lam_report') }}"
+           id="LAM-report"
+           class="btn btn-file blue darken-2">Generate LAM Report</a>
+        <a href="{{ url_for('download_lam_files') }}"
+           id="LAM-files"
+           class="btn btn-file green darken-1">Generate all LAM files</a>
+        <a href="{{ url_for('download_indexes') }}"
+           id="LAM-indexes"
+           class="btn btn-file purple darken-1">Generate LAM Indexes</a>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Refresh the page every 10 seconds to update task status
+        setTimeout(function() {
+            location.reload();
+        }, 10000);
+    </script>
 {% endblock %}

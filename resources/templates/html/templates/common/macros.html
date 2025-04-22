@@ -83,13 +83,13 @@
                         <div class="card-body">
                             {% if code_mode %}
                                 <pre>
-                            {% for idx, item in values.iteritems() %}
+                            {% for idx, item in values.items() %}
                                 <code property="{{ rdfa_property }}">{{ item|e|replace("\n","<br/>") }}</code>
                                 {{ "<hr> " if not loop.last }}
                             {% endfor %}
                             </pre>
                             {% else %}
-                                {% for idx, item in values.iteritems() %}
+                                {% for idx, item in values.items() %}
                                     <p property="{{ rdfa_property }}">{{ item|e|replace("\n","<br/>") }}</p>
                                     {{ "<hr> " if not loop.last }}
                                 {% endfor %}
@@ -100,7 +100,7 @@
             {% else %}
                 <dl>
                     <dt title="{{ property_id }}">{{ property_label }}</dt>
-                    {% for idx, item in values.iteritems() %}
+                    {% for idx, item in values.items() %}
                         <dd title="{{ property_id }}" property="{{ rdfa_property }}">{{ item|e }}</dd>
                     {% endfor %}
                 </dl>
@@ -130,7 +130,7 @@
 
                     <div class="collapse {{ accordion_content_state }}">
                         <div class="card-body">
-                            {% for idx, item in values.iteritems() %}
+                            {% for idx, item in values.items() %}
                                 {% if link_label_property_id is none %}
                                     <a title="{{ item }}" href={{ '"' + item +'"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ namespaces.uri_to_qname(item, error_fail=False) |e|replace("\n","<br/>") }}</a>
                                     <br>
@@ -145,7 +145,7 @@
             {% else %}
                 <dl>
                     <dt>{{ property_label }}</dt>
-                    {% for idx, item in values.iteritems() %}
+                    {% for idx, item in values.items() %}
                         {% if link_label_property_id is none %}
                             <dd>
                                 <a title="{{ item }}" href={{ '"' + item + '"' + ' target="_blank"' if external_link else '"#' + item + '"' }} property="{{ rdfa_property }}">{{ namespaces.uri_to_qname(item, error_fail=False)|e|replace("\n","<br/>") }}</a>
@@ -187,7 +187,7 @@
         {% set values = result_set[property_id].dropna() %}
         {% if not values.empty %}
             {{ label + " " }}
-            {% for idx, item in values.iteritems() %}
+            {% for idx, item in values.items() %}
                 {% if external %}
                     <a title="{{ item }}" href="{{ item }}"
                        target="_blank">{{ namespaces.uri_to_qname(item, error_fail=False)|e|replace("\n","<br/>") }}</a>

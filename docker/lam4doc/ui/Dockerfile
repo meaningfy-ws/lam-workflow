@@ -21,4 +21,4 @@ CMD gunicorn --preload \
              -k uvicorn.workers.UvicornWorker \
              --timeout ${LAM_GUNICORN_TIMEOUT:-1200} \
              -w ${LAM_GUNICORN_API_WORKERS:-1} \
-             lam4doc.entrypoints.ui.run:app \
+             lam4doc.entrypoints.ui.run:asgi_app \

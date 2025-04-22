@@ -159,6 +159,20 @@ class LAMConfig:
         self.logger.debug(value)
         return value
 
+    @property
+    def LAM_REDIS_SERVICE(self) -> str:
+        location = os.environ.get('LAM_REDIS_LOCATION', 'redis://redis')
+        port = os.environ.get('LAM_REDIS_PORT', 6379)
+        value = f'{location}:{port}'
+        self.logger.debug(value)
+        return value
+
+    @property
+    def LAM_REPORTS_DB(self) -> str:
+        value = os.environ.get('LAM_REPORTS_DB', '/usr/src/app/lam_reports')
+        self.logger.debug(value)
+        return value
+
 
 config = LAMConfig()
 
