@@ -12,7 +12,8 @@ import logging
 from pathlib import Path
 from uuid import uuid4
 
-from flask import send_file
+from flask import send_file, Response
+from typing_extensions import NoReturn
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import NotAcceptable, NotFound
 
@@ -164,11 +165,12 @@ def get_validations() -> tuple:
     Get validation runs with their metadata.
     :return: list of run validations
     """
+    logger.debug('start get validations endpoint')
     validations = get_available_validations(config.RDF_VALIDATOR_REPORTS_DB)
     return validations, 200
 
 
-def get_validation(uid: str, report_type: str) -> tuple:
+def get_validation(uid: str, report_type: str) -> Response:
     """
     Get validation report
     :param uid: unique identifier of the validation
@@ -180,7 +182,7 @@ def get_validation(uid: str, report_type: str) -> tuple:
     try:
         location, filename = get_report(validation_uid=uid, extension=report_type,
                                         db_location=config.RDF_VALIDATOR_REPORTS_DB)
-        return send_file(location, attachment_filename=filename)
+        return send_file(path_or_file=location, download_name=filename)
     except FileNotFoundError:
         raise NotFound('Validation doesn\'t exist.')
 

@@ -8,6 +8,7 @@
 """
 Service to consume validator API.
 """
+import logging
 from typing import List
 
 import requests
@@ -15,6 +16,7 @@ from werkzeug.datastructures import FileStorage
 
 from validator.config import config
 
+logger = logging.getLogger(config.RDF_VALIDATOR_LOGGER)
 
 def validate_file(data_file: FileStorage, schema_files: List[FileStorage]) -> tuple:
     """
@@ -136,8 +138,18 @@ def get_validations() -> tuple:
     :return: the list of validations
     :rtype: list, int
     """
-    response = requests.get(config.RDF_VALIDATOR_API_SERVICE + '/validations')
-    return response.json(), response.status_code
+    try:
+        response = requests.get(config.RDF_VALIDATOR_API_SERVICE + '/validations')
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        return response.json(), response.status_code
+    except requests.exceptions.RequestException as e:
+        # Handle connection errors, timeouts, etc.
+        logger.error(f"Error connecting to API: {str(e)}")
+        return [], 500
+    except ValueError as e:  # This includes JSONDecodeError
+        # Handle JSON parsing errors
+        logger.error(f"Error parsing API response: {str(e)}")
+        return [], 500
 
 
 def delete_validation(validation_id: str) -> tuple:
