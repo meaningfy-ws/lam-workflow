@@ -66,18 +66,20 @@ def validate_sparql_endpoint(sparql_endpoint_url: str, schema_files: List[FileSt
     :param graphs: An optional list of named graphs to restrict the scope of the validation
     :return:
     """
-    data = {
-        'sparql_endpoint_url': sparql_endpoint_url,
-    }
+    # Create a combined dictionary for both data and files
+    files = {}
+
+    # Add data fields to the files dictionary
+    files['sparql_endpoint_url'] = (None, sparql_endpoint_url, 'text/plain')
 
     if graphs:
-        data['graphs'] = graphs
+        files['graphs'] = (None, ' '.join(graphs) if isinstance(graphs, list) else graphs, 'text/plain')
 
-    files = dict()
+    # Add schema files
     for index, schema_file in enumerate(schema_files):
         files[f'schema_file{index}'] = (schema_file.filename, schema_file.stream, schema_file.mimetype)
 
-    response = requests.post(config.RDF_VALIDATOR_API_SERVICE + '/validate/shapes/url', data=data, files=files)
+    response = requests.post(config.RDF_VALIDATOR_API_SERVICE + '/validate/shapes/url', files=files)
     return response.content, response.status_code
 
 
