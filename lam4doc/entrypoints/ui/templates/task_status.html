@@ -13,40 +13,22 @@
                     <table>
                         <tr>
                             <th>Task ID:</th>
-                            <td>{{ task.id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Type:</th>
-                            <td>{{ task.type }}</td>
+                            <td>{{ task.task_id }}</td>
                         </tr>
                         <tr>
                             <th>Status:</th>
-                            <td>{{ task.status }}</td>
+                            <td>{{ task.task_status }}</td>
                         </tr>
+                        {% if task.is_ready %}
                         <tr>
-                            <th>Created:</th>
-                            <td>{{ task.created_at }}</td>
-                        </tr>
-                        {% if task.completed_at %}
-                        <tr>
-                            <th>Completed:</th>
-                            <td>{{ task.completed_at }}</td>
+                            <th>Task completed.</th>
+                            <td>Check Tasks & Reports page to download the report, or the error log file.</td>
                         </tr>
                         {% endif %}
-                        {% if task.error %}
+                        {% if not task.is_successful %}
                         <tr>
                             <th>Error:</th>
-                            <td class="red-text">{{ task.error }}</td>
-                        </tr>
-                        {% endif %}
-                        {% if task.result_id %}
-                        <tr>
-                            <th>Result:</th>
-                            <td>
-                                <a href="{{ url_for('download_report', report_id=task.result_id) }}" class="btn blue darken-2">
-                                    Download Report <i class="material-icons right">file_download</i>
-                                </a>
-                            </td>
+                            <td class="red-text">{{ task.traceback }}</td>
                         </tr>
                         {% endif %}
                     </table>

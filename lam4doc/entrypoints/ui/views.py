@@ -72,7 +72,7 @@ def download_indexes():
     # Extract task ID from the response and redirect to task status page
     task_id = response.get('task_id')
     if task_id:
-        flash(f'Indexes generation task started. You can track its progress on this page.', 'success')
+        flash(f'Indexes generation task started. You can track its progress on this page or in Tasks & Reports page.', 'success')
         return redirect(url_for('task_status', task_id=task_id))
     else:
         flash('Failed to start indexes generation task.', 'error')
@@ -94,7 +94,7 @@ def download_lam_files():
     # Extract task ID from the response and redirect to task status page
     task_id = response.get('task_id')
     if task_id:
-        flash(f'LAM files generation task started. You can track its progress on this page.', 'success')
+        flash(f'LAM files generation task started. You can track its progress on this page or in Tasks & Reports page.', 'success')
         return redirect(url_for('task_status', task_id=task_id))
     else:
         flash('Failed to start LAM files generation task.', 'error')
@@ -118,7 +118,7 @@ def upload_rdf():
             logging.info(response)
             flash(response, 'error')
         else:
-            flash('File upload successful', 'success')
+            flash('Files upload successful', 'success')
             form = UploadRDFFilesForm()
             return render_template('upload_rdf.html', form=form, title='Upload RDF Files')
 

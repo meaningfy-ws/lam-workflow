@@ -94,7 +94,9 @@ def get_task_status(task_id: str) -> tuple:
         return {
             "task_id": task.id,
             "task_status": task.status,
-            "task_result": task.result
+            "is_ready": task.ready(),
+            "is_successful": task.successful(),
+            "traceback": task.traceback
         }, 200
     raise NotFound('task not found')  # 404
 
