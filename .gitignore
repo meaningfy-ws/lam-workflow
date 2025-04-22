@@ -164,3 +164,4 @@ reports/
 db/
 .env.secrets
 .env
+lam_reports
