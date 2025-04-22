@@ -74,12 +74,15 @@ services:
       dockerfile: ./docker/lam4doc/api/Dockerfile
     volumes:
       - ..:/usr/src/app
+      - lam-reports:/tmp/lam_reports
     ports:
       - ${LAM_API_PORT}:${LAM_API_PORT}
     env_file: ../.env
     restart: always
     networks:
       - mydefault
+    depends_on:
+      - lam-generation-celery-worker
 
   lam-generation-service-ui:
     container_name: lam-generation-service-ui
@@ -96,6 +99,22 @@ services:
       - "lam-generation-service-api"
     networks:
       - mydefault
+
+  lam-generation-celery-worker:
+    container_name: lam-generation-celery-worker
+    build:
+      context: ..
+      dockerfile: ./docker/lam4doc/api/Dockerfile
+    command: bash -c "python -c 'from lam4doc.adapters.celery import *' && celery -A lam4doc.adapters.celery.celery_worker worker --loglevel=info"
+    volumes:
+      - ..:/usr/src/app
+      - lam-reports:/tmp/lam_reports
+    env_file: ../.env
+    networks:
+      - mydefault
+    depends_on:
+      - rdf-validator-redis
+      - fuseki
 
   fuseki:
     container_name: lam-fuseki
@@ -115,6 +134,7 @@ services:
 
 volumes:
   lam-fuseki:
+  lam-reports:
 
 networks:
   mydefault:
