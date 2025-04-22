@@ -11,14 +11,4 @@ RUN pip install -r requirements/common.txt --no-cache-dir
 
 COPY . /usr/src/app
 
-CMD gunicorn --preload \
-             --log-file=- \
-             --access-logfile=- \
-             --error-logfile=- \
-             --log-level=debug \
-             --capture-output \
-             --bind 0.0.0.0:${LAM_UI_PORT:-8050} \
-             -k uvicorn.workers.UvicornWorker \
-             --timeout ${LAM_GUNICORN_TIMEOUT:-1200} \
-             -w ${LAM_GUNICORN_API_WORKERS:-1} \
-             lam4doc.entrypoints.ui.run:asgi_app \
+CMD uvicorn lam4doc.entrypoints.ui.run:asgi_app --host 0.0.0.0 --port ${LAM_UI_PORT:-8050} --log-level debug

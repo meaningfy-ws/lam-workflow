@@ -38,7 +38,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/validator/api/Dockerfile
-    command: celery -A validator.adapters.celery.celery_worker worker
+    command: celery -A validator.adapters.celery.celery_worker worker -Q validator_tasks
     volumes:
       - ..:/usr/src/app
     env_file: ../.env
@@ -105,7 +105,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/lam4doc/api/Dockerfile
-    command: bash -c "python -c 'from lam4doc.adapters.celery import *' && celery -A lam4doc.adapters.celery.celery_worker worker --loglevel=info"
+    command: celery -A lam4doc.adapters.celery.celery_worker worker --loglevel=info -Q lam4doc_tasks
     volumes:
       - ..:/usr/src/app
       - lam-reports:/tmp/lam_reports

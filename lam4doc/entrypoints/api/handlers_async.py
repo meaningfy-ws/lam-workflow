@@ -32,7 +32,7 @@ def generate_lam_report_async(report_extension: str = DEFAULT_REPORT_TYPE) -> tu
     try:
 
 
-        task = async_generate_report.delay(report_extension)
+        task = async_generate_report.apply_async(args=(report_extension, ), queue="lam4doc_tasks")
 
         logger.debug('finish generate lam report async endpoint')
         return {'task_id': task.id}, 200
@@ -48,7 +48,7 @@ def generate_indexes_async() -> tuple:
     """
     logger.info('start generate lam indexes async endpoint')
     try:
-        task = async_generate_indexes.delay()
+        task = async_generate_indexes.apply_async(queue="lam4doc_tasks")
 
         logger.debug('finish generate lam indexes async endpoint')
         return {'task_id': task.id}, 200
@@ -64,7 +64,7 @@ def get_lam_files_async() -> tuple:
     """
     logger.info('start get lam files async endpoint')
     try:
-        task = async_generate_all_files.delay()
+        task = async_generate_all_files.apply_async(queue="lam4doc_tasks")
 
         logger.debug('finish get lam files async endpoint')
         return {'task_id': task.id}, 200
