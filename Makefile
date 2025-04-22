@@ -25,7 +25,7 @@ SHELL=/bin/bash -o pipefail
 
 PROJECT_PATH = $(shell pwd)
 ENV_FILE_PATH = $(PROJECT_PATH)/.env
-ENV_SECRETS_FILE_PATH = $(PROJECT_PATH)/.env.secrets
+#ENV_SECRETS_FILE_PATH = $(PROJECT_PATH)/.env.secrets
 INFRA_FOLDER_PATH = $(PROJECT_PATH)/docker
 REQUIREMENTS_FOLDER_PATH = $(PROJECT_PATH)/requirements
 
@@ -64,17 +64,6 @@ check-uv:
 		echo "$(ICON_WARNING) Please install it. Source: https://docs.astral.sh/uv/getting-started/installation/"; \
 		exit 1; \
 	}
-
-update-env:
-	@ $(call echo_message,$(ICON_PROGRESS),Updating .env file)
-	@ echo -e "\n# The following are secret environment variables:\n" > $(ENV_FILE_PATH)
-	@ cat $(ENV_SECRETS_FILE_PATH) >> $(ENV_FILE_PATH)
-	@ echo -e "\n\n# The following are technical environment variables:\n" >> $(ENV_FILE_PATH)
-	@ echo PROJECT_PATH=${PROJECT_PATH} >> $(ENV_FILE_PATH)
-	@ echo ENV_FILE_PATH=${ENV_FILE_PATH} >> $(ENV_FILE_PATH)
-	@ echo INFRA_FOLDER_PATH=${INFRA_FOLDER_PATH} >> $(ENV_FILE_PATH)
-	@ echo PROJECT_NAME=${PROJECT_NAME} >> $(ENV_FILE_PATH)
-	@ $(call echo_message,$(ICON_DONE),.env file has been updated)
 
 build-%:
 	@ $(call echo_message,$(ICON_PROGRESS),Building $(*) for $(PROJECT_NAME))
