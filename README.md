@@ -7,10 +7,6 @@ This repository provides the enterprise architecture and description of capabili
 
 The following table outlines the system requirements for each of the project services. Each service is allocated the same resources to ensure consistent performance and scalability across the application stack.
 
-## Resource Allocation
-
-- **CPU:** 2048 millicores (2 vCPU)
-- **Memory:** 8 GB RAM
 
 ## Service Resource Table
 
