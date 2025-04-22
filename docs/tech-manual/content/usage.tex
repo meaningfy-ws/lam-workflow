@@ -25,7 +25,16 @@ To access the online documentation and testing grounds for the LAM Validator API
 Here you can find the defintion for each API endpoint, the HTTP methods, request structure, and the possibility to test the endpoints.
 
 \subsubsection{UI}
-To access the user interface for the LAM Validator service visit the following link \url{http://localhost:10002}. You'll be greeted with an interface like in Figure \ref{fig:validator-ui-file} containing 2 pages.
+To access validation UI visit the following link url{http://localhost:10002}. You'll be greeted with an interface like in Figure \ref{fig:validator-ui-home}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/usage/validator-ui-home.png}
+  \caption{LAM Validator UI home page}
+  \label{fig:validator-ui-home}
+\end{figure}
+
+To access the user interface for the LAM Validator service visit the following link \url{http://localhost:10002/validate/shapes/file}. You'll be greeted with an interface like in Figure \ref{fig:validator-ui-file} containing 2 pages.
 
 \begin{figure}[H]
   \centering
@@ -64,7 +73,7 @@ To access the user interface for the LAM Generation Services visit the following
   \includegraphics[width=0.9\textwidth]{images/usage/lam-generation-ui-home.png}
   \caption{LAM Generation Services home page}
   \label{fig:lam-generation-ui-home}
-\end{figure} 
+\end{figure}
 
 Here you can request the LAM report in 2 formats (Figure \ref{fig:lam-generation-ui-report}), the LAM indexes, or both report formats and indexes in a zipped format.
 
@@ -74,6 +83,16 @@ Here you can request the LAM report in 2 formats (Figure \ref{fig:lam-generation
   \caption{LAM Generation Services report generation}
   \label{fig:lam-generation-ui-report}
 \end{figure} 
+
+To access current tasks and reports, visit the following link\url{http://localhost:8050/tasks}.
+Here (Figure \ref{fig:lam-generation-ui-tasks}) you can see a list of tasks and reports that can be downloaded.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/usage/lam-generation-ui-tasks.png}
+  \caption{LAM Generation Services tasks page}
+  \label{fig:lam-generation-ui-tasks}
+\end{figure}
 
 \subsection{LAM Dedicated Triple Store}
 To access the LAM Fuseki triple store service visit the following link \url{http://localhost:3010}. You'll be requested the login credentials which can be found in Table \ref{tab:fuseki}. After logging in, you'll be greeted with an interface like in Figure \ref{fig:lam-fuseki-home}.

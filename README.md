@@ -23,6 +23,60 @@ git clone https://github.com/meaningfy-ws/lam-workflow.git
 
 or unzip the project that you received.
 
+### Prepare [`.env`](.env) file
+
+Ensure that you have .env file in project root folder with following minimal variables:
+```env
+
+# The following are secret environment variables:
+
+RDF_VALIDATOR_API_PORT=
+RDF_VALIDATOR_UI_PORT=
+RDF_VALIDATOR_API_LOCATION=
+RDF_VALIDATOR_UI_LOCATION=
+RDF_VALIDATOR_GUNICORN_TIMEOUT=
+RDF_VALIDATOR_GUNICORN_API_WORKERS=
+RDF_VALIDATOR_GUNICORN_UI_WORKERS=
+RDF_VALIDATOR_UI_NAME=
+RDF_VALIDATOR_REPORT_TITLE=
+RDF_VALIDATOR_TEMPLATE_LOCATION=
+RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION=
+RDF_VALIDATOR_SHACL_SHAPES_LOCATION=
+RDF_VALIDATOR_APS_LOCATION=
+RDF_VALIDATOR_ALLOWS_EXTRA_SHAPES=
+LAM_GUNICORN_TIMEOUT=
+LAM_API_LOCATION=
+LAM_API_PORT=
+LAM_GUNICORN_API_WORKERS=
+LAM_UI_LOCATION=
+LAM_UI_PORT=
+LAM_GUNICORN_UI_WORKERS=
+LAM_FUSEKI_DATA_FOLDER=
+LAM_FUSEKI_LOCATION=
+LAM_FUSEKI_PORT=
+LAM_FUSEKI_QUERY_URL=
+LAM_FUSEKI_USERNAME=
+LAM_FUSEKI_PASSWORD=
+LAM_FUSEKI_ADMIN_PASSWORD=
+LAM_FUSEKI_EXTERNAL_PORT=
+LAM_FUSEKI_JVM_ARGS=
+RDF_VALIDATOR_API_SECRET_KEY=
+RDF_VALIDATOR_UI_SECRET_KEY=
+RDF_VALIDATOR_DEBUG=
+RDFUNIT_QUERY_DELAY_MS=
+RDF_VALIDATOR_REDIS_PORT=
+RDF_VALIDATOR_REDIS_LOCATION=
+RDF_VALIDATOR_FLOWER_PORT=
+
+# The following are technical environment variables:
+
+PROJECT_PATH=
+ENV_FILE_PATH=
+INFRA_FOLDER_PATH=
+PROJECT_NAME=
+
+```
+
 ### Starting the services
 
 Navigate to the repository "lam-workflow" (where Git cloned the repository) or to the location where you unzipped the project.
@@ -39,17 +93,6 @@ To stop the services run:
 ```shell script
 make stop-services
 ```
-
-### Makefile targets
-
-**validator-set-report-template**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom validator report template inside the container's volume
-
-
-**validator-set-shacl-shapes**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom SHACL shapes inside the container's volume
 
 
 # Usage
@@ -71,7 +114,7 @@ For usage examples check  the **Usage** chapter from the [tech-manual.pdf](docs/
 * `README.md` - this file
 
 # Services and their respective configurations
-Please note that the configured values can be changed by modifying the [`/docker/.env`](.env) file.
+Please note that the configured values can be changed by modifying the [`.env`](.env) file.
 
 ### LAM Validator API
 

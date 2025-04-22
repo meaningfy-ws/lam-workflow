@@ -20,7 +20,7 @@ There is a range of ports that must be available on the host machine as they wil
 	\endlastfoot
 	%
 	LAM validator & 10002       & 10001          &     rdf-validator -shacl-shape          \\* \hline
-	LAM Generation Service & 8050         & 4050               &                \\* \hline
+	LAM Generation Service & 8050         & 4050               &         lam-reports       \\* \hline
 	LAM dedicated triple store & 3010                 &          &    lam-fuseki            \\* \hline
 	\caption{Port usage inventory}
 	\label{tab:port-inventory}                                               \\
@@ -81,7 +81,6 @@ Downloading the Docker images will be triggered automatically on first request t
 To start the services using Makefile
 
 \begin{lstlisting}[language=bash,]
-make location=</your-custom/shapes/location> validator-set-shacl-shapes
 make start-services
 \end{lstlisting}
 
@@ -105,13 +104,13 @@ docker rm temp
 then start the services
 
 \begin{lstlisting}[language=bash,]
-docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d
+docker-compose --file docker/docker-compose.yml --env-file .env up -d
 \end{lstlisting}
 
 To stop the services run
 
 \begin{lstlisting}[language=bash,]
-docker-compose --file docker/docker-compose.yml --env-file docker/.env down
+docker-compose --file docker/docker-compose.yml --env-file .env down
 \end{lstlisting}
 
 In case you need to rebuild and erase entirely the old containers and volumes from all services, please use the following set of commands.
