@@ -3,6 +3,29 @@ The deployment package for the LAM services.
 
 This repository provides the enterprise architecture and description of capabilities necessary for the digital transformation of the asset publishing life-cycle workflow.   
 
+# System Requirements for Project Services
+
+The following table outlines the system requirements for each of the project services. Each service is allocated the same resources to ensure consistent performance and scalability across the application stack.
+
+## Resource Allocation
+
+- **CPU:** 2048 millicores (2 vCPU)
+- **Memory:** 8 GB RAM
+
+## Service Resource Table
+
+| Service Name                     | CPU Value     | Memory Value |
+|----------------------------------|---------------|---------------|
+| lam-validator-api               | 2048 (2 vCPU) | 8 GB RAM      |
+| lam-validator-ui                | 2048 (2 vCPU) | 8 GB RAM      |
+| rdf-validator-celery-worker     | 2048 (2 vCPU) | 8 GB RAM      |
+| redis                           | 2048 (2 vCPU) | 8 GB RAM      |
+| lam-generation-service-api      | 2048 (2 vCPU) | 8 GB RAM      |
+| lam-generation-service-ui       | 2048 (2 vCPU) | 8 GB RAM      |
+| lam-generation-celery-worker    | 2048 (2 vCPU) | 8 GB RAM      |
+| fuseki                          | 2048 (2 vCPU) | 8 GB RAM      |
+
+
 # Installation
 
 ### Install the Docker engine
