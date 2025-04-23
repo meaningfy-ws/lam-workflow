@@ -4,14 +4,11 @@ import logging
 import os
 import tempfile
 from json import loads
-from pathlib import Path
 
-from flask import render_template, send_from_directory, flash, redirect, url_for, send_file, request
+from flask import render_template, flash, redirect, url_for, send_file, request
 
-from lam4doc.config import HTML_REPORT_TYPE, ZIP_REPORT_TYPE
 from lam4doc.entrypoints.ui import app
-from lam4doc.entrypoints.ui.api_wrapper import get_lam_report as api_get_lam_report, get_indexes as api_get_indexes, \
-    get_lam_files as api_get_lam_files, upload_rdf as api_upload_rdf, \
+from lam4doc.entrypoints.ui.api_wrapper import upload_rdf as api_upload_rdf, \
     get_lam_report_async as api_get_lam_report_async, get_indexes_async as api_get_indexes_async, \
     get_lam_files_async as api_get_lam_files_async, get_reports as api_get_reports, \
     get_task_status as api_get_task_status, get_active_tasks as api_get_active_tasks, \
@@ -30,7 +27,8 @@ def get_error_message_from_response(response):
 @app.route('/', methods=['GET'])
 def index():
     logger.debug('request index view')
-    return render_template('index.html', title='LAM index page')
+    return render_template(template_name_or_list='index.html',
+                           title='LAM Workflow')
 
 
 @app.route('/lam-report', methods=['GET', 'POST'])
@@ -72,7 +70,8 @@ def download_indexes():
     # Extract task ID from the response and redirect to task status page
     task_id = response.get('task_id')
     if task_id:
-        flash(f'Indexes generation task started. You can track its progress on this page or in Tasks & Reports page.', 'success')
+        flash(f'Indexes generation task started. You can track its progress on this page or in Tasks & Reports page.',
+              'success')
         return redirect(url_for('task_status', task_id=task_id))
     else:
         flash('Failed to start indexes generation task.', 'error')
@@ -94,7 +93,8 @@ def download_lam_files():
     # Extract task ID from the response and redirect to task status page
     task_id = response.get('task_id')
     if task_id:
-        flash(f'LAM files generation task started. You can track its progress on this page or in Tasks & Reports page.', 'success')
+        flash(f'LAM files generation task started. You can track its progress on this page or in Tasks & Reports page.',
+              'success')
         return redirect(url_for('task_status', task_id=task_id))
     else:
         flash('Failed to start LAM files generation task.', 'error')
@@ -148,7 +148,10 @@ def tasks():
     else:
         flash(f'Error retrieving reports: {reports_response}', 'error')
 
-    return render_template('tasks.html', title='LAM Tasks', tasks=tasks, reports=reports)
+    return render_template(template_name_or_list='tasks.html',
+                           title='LAM Workflow',
+                           tasks=tasks,
+                           reports=reports)
 
 
 @app.route('/task/<task_id>', methods=['GET'])

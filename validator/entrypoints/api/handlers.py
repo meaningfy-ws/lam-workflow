@@ -13,7 +13,6 @@ from pathlib import Path
 from uuid import uuid4
 
 from flask import send_file, Response
-from typing_extensions import NoReturn
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import NotAcceptable, NotFound
 
@@ -49,7 +48,8 @@ def validate_file_with_shacl(data_file: FileStorage,
     saved_location, save_file_to_validate, saved_shacl_shapes = save_data_for_validation(file_to_validate=data_file,
                                                                                          shacl_shapes=schema_files,
                                                                                          location=config.RDF_VALIDATOR_FILE_DB)
-    task = async_validate_file.apply_async(args=(str(uuid4()), save_file_to_validate, saved_shacl_shapes, saved_location), queue="validator_tasks")
+    task = async_validate_file.apply_async(
+        args=(str(uuid4()), save_file_to_validate, saved_shacl_shapes, saved_location), queue="validator_tasks")
     logger.debug('finish request to validate file with shacl shapes endpoint')
     return {'task_id': task.id}, 200
 
@@ -108,7 +108,8 @@ def validate_sparql_endpoint_with_shacl(body,
     saved_location, _, saved_shacl_shapes = save_data_for_validation(file_to_validate=None,
                                                                      shacl_shapes=schema_files,
                                                                      location=config.RDF_VALIDATOR_FILE_DB)
-    task = async_validate_url.apply_async(args=(str(uuid4()), sparql_endpoint_url, graphs, saved_shacl_shapes, saved_location), queue="validator_tasks")
+    task = async_validate_url.apply_async(
+        args=(str(uuid4()), sparql_endpoint_url, graphs, saved_shacl_shapes, saved_location), queue="validator_tasks")
 
     logger.debug('finish request to validate sparql endpoint')
     return {'task_id': task.id}, 200
@@ -228,10 +229,12 @@ def get_task_status(task_id: str) -> tuple:
     task = retrieve_task(task_id)
     if task:
         return {
-                   "task_id": task.id,
-                   "task_status": task.status,
-                   "task_result": task.result
-               }, 200
+            "task_id": task.id,
+            "task_status": task.status,
+            "is_ready": task.ready(),
+            "is_successful": task.successful(),
+            "traceback": task.traceback
+        }, 200
     raise NotFound('task not found')  # 404
 
 

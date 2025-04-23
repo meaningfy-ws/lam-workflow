@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+{% set active_page = "tasks" %}
+
+{% block app_content %}
+    <h1 id="title">Task Status</h1>
+    
+    <div class="row">
+        <div class="col s12 z-depth-3 form">
+            <div class="row">
+                <div class="col s12">
+                    <h4>Task Details</h4>
+                    <table>
+                        <tr>
+                            <th>Task ID:</th>
+                            <td>{{ task.task_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>{{ task.task_status }}</td>
+                        </tr>
+                        {% if task.is_ready %}
+                        <tr>
+                            <th>Task completed.</th>
+                            <td>Check Tasks & Reports page to download the report, or the error log file.</td>
+                        </tr>
+                        {% endif %}
+                        {% if not task.is_successful %}
+                        <tr>
+                            <th>Error:</th>
+                            <td class="red-text">{{ task.traceback }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+            
+            <div class="row" style="margin-top: 2em;">
+                <div class="col s12 right-align">
+                    <a href="{{ url_for('get_active_tasks') }}" class="btn btn-file blue darken-2">
+                        Go to Tasks & Reports page <i class="material-icons right">arrow_back</i>
+                    </a>
+                    
+                    {% if task.status == 'PENDING' or task.status == 'RUNNING' %}
+                        <form method="POST" action="{{ url_for('revoke_task', task_id=task.id) }}" style="display: inline-block;">
+                            <button type="submit" class="btn red darken-2">
+                                Stop Task <i class="material-icons right">stop</i>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if task.status == 'PENDING' or task.status == 'RUNNING' %}
+        <script>
+            // Auto-refresh the page every 5 seconds if the task is still running
+            setTimeout(function() {
+                window.location.reload();
+            }, 5000);
+        </script>
+    {% endif %}
+{% endblock %}

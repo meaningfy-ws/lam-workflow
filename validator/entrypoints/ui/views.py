@@ -1,14 +1,6 @@
 #!/usr/bin/python3
 
-# views.py
-# Date:  24/09/2020
-# Author: Mihai Coșleț
-# Email: coslet.mihai@gmail.com
-
-"""
-UI pages
-
-"""
+import json
 import logging
 import tempfile
 from pathlib import Path
@@ -21,7 +13,7 @@ from validator.entrypoints.ui.api_wrapper import validate_file as api_validate_f
     validate_sparql_endpoint as api_validate_sparql_endpoint, \
     validate_sparql_endpoint_with_ap as api_validate_sparql_endpoint_with_ap, \
     validate_file_with_ap as api_validate_file_with_ap, get_active_tasks as api_get_active_tasks, \
-    revoke_task as api_revoke_task, get_validations, get_report, delete_validation as api_delete_validation
+    revoke_task as api_revoke_task, get_validations, get_report, delete_validation as api_delete_validation, get_task
 from validator.entrypoints.ui.forms import SHACLShapesDataFileForm, ApplicationProfileDataFileForm, \
     SHACLShapesURLForm, ApplicationProfileURLForm
 from validator.entrypoints.ui.helpers import get_error_message_from_response
@@ -34,11 +26,9 @@ def index():
     """
     Home page containing the list of available validation reports.
     """
-    logger.debug('request index view')
-    validations, _ = get_validations()
 
-    logger.debug('render index view')
-    return render_template('index.html', validations=validations,
+    return render_template(template_name_or_list='index.html',
+                           title='LAM Validator',
                            validator_name=config.RDF_VALIDATOR_UI_NAME)
 
 
@@ -59,8 +49,17 @@ def validate_shapes_file():
             logger.exception(exception_text)
             flash(exception_text, 'error')
         else:
-            flash('validation successfully started', 'success')
-            logger.debug('render create diff view')
+            # Extract task ID from response and redirect to task status
+            try:
+                task_data = json.loads(response)
+                task_id = task_data.get('task_id')
+                if task_id:
+                    flash(
+                        'Validation successfully started. You can track task status and reports in Tasks & Reports page.',
+                        'success')
+                    return redirect(url_for('task_status', task_id=task_id))
+            except (ValueError, AttributeError) as e:
+                logger.error(f"Error parsing task ID from response: {str(e)}")
 
     logger.debug('render validate file clean view')
     return render_template('validate/file.html', form=form, title='Validate File',
@@ -112,8 +111,16 @@ def validate_sparql_endpoint():
             logger.exception(exception_text)
             flash(exception_text, 'error')
         else:
-            flash('validation successfully started', 'success')
-            logger.debug('render create diff view')
+            try:
+                task_data = json.loads(response)
+                task_id = task_data.get('task_id')
+                if task_id:
+                    flash(
+                        'Validation successfully started. You can track task status and reports in Tasks & Reports page.',
+                        'success')
+                    return redirect(url_for('task_status', task_id=task_id))
+            except (ValueError, AttributeError) as e:
+                logger.error(f"Error parsing task ID from response: {str(e)}")
 
     logger.debug('request validate sparql endpoint clean view')
     return render_template('validate/sparql_endpoint.html', form=form, title='Validate SPARQL Endpoint',
@@ -176,22 +183,46 @@ def delete_validation(validation_id: str):
         logger.exception(exception_text)
         flash(exception_text, 'error')
     else:
-        flash('validation successfully removed', 'success')
+        flash('Report successfully removed', 'success')
 
-    return redirect(url_for('index'))
+    return redirect(url_for('get_active_tasks'))
 
 
 @app.route('/tasks')
 def get_active_tasks():
     """
-    Page containing the list of active tasks.
+    Page containing the list of active tasks and available validation reports.
     """
-    logger.debug('request active tasks view')
     tasks, _ = api_get_active_tasks()
+    validations, _ = get_validations()
 
-    logger.debug(tasks)
-    logger.debug('render active tasks view')
-    return render_template('tasks/view_active_tasks.html', tasks=tasks, validator_name=config.RDF_VALIDATOR_UI_NAME)
+    return render_template(template_name_or_list='tasks/view_active_tasks.html',
+                           title='LAM Validator',
+                           tasks=tasks,
+                           validations=validations,
+                           validator_name=config.RDF_VALIDATOR_UI_NAME)
+
+
+@app.route('/task/<task_id>')
+def task_status(task_id: str):
+    """
+    Display status and details of a specific task.
+    """
+    logger.debug(f'Request task status view for: {task_id}')
+
+    task, status = get_task(task_id)
+
+    if status != 200:
+        exception_text = get_error_message_from_response(task)
+        logger.exception(exception_text)
+        flash(exception_text, 'error')
+        return redirect(url_for('get_active_tasks'))
+
+    logger.debug('Render task status view')
+    return render_template(template_name_or_list='task_status.html',
+                           task=task,
+                           title='Task Status',
+                           validator_name=config.RDF_VALIDATOR_UI_NAME)
 
 
 @app.route('/revoke-task/<task_id>')

@@ -18,6 +18,7 @@ from validator.config import config
 
 logger = logging.getLogger(config.RDF_VALIDATOR_LOGGER)
 
+
 def validate_file(data_file: FileStorage, schema_files: List[FileStorage]) -> tuple:
     """
     Method to connect to the validator api to validate a file.
@@ -177,3 +178,22 @@ def get_report(validation_id: str, report_type: str) -> tuple:
                                 'report_type': report_type
                             })
     return response.content, response.status_code
+
+
+def get_task(task_id: str) -> tuple:
+    """
+    Method to get details of a specific task from the API.
+    :param task_id: ID of the task to retrieve
+    :return: task details and status code
+    :rtype: dict, int
+    """
+    try:
+        response = requests.get(f'{config.RDF_VALIDATOR_API_SERVICE}/tasks/{task_id}')
+        response.raise_for_status()
+        return response.json(), response.status_code
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error connecting to API: {str(e)}")
+        return {"error": str(e)}, 500
+    except ValueError as e:  # This includes JSONDecodeError
+        logger.error(f"Error parsing API response: {str(e)}")
+        return {"error": f"Failed to parse response: {str(e)}"}, 500
