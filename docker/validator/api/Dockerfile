@@ -1,10 +1,11 @@
 # Build RDFUnit
 FROM maven:3-jdk-8 as build
 
-ARG RDFUNIT_VERSION=0.8.23
-RUN curl https://codeload.github.com/AKSW/RDFUnit/zip/refs/tags/v${RDFUNIT_VERSION} --output rdfunit-sources.zip
-RUN unzip rdfunit-sources.zip
-WORKDIR /RDFUnit-${RDFUNIT_VERSION}
+ARG RDFUNIT_TAG=ef56ceb015163310e79b4a59dc5030bfb659ee70
+RUN curl -L -f https://codeload.github.com/AKSW/RDFUnit/zip/${RDFUNIT_TAG} --output rdfunit-sources.zip && \
+    unzip rdfunit-sources.zip && \
+    rm rdfunit-sources.zip
+WORKDIR /RDFUnit-${RDFUNIT_TAG}
 RUN mvn -pl rdfunit-validate -am clean package -P cli-standalone -DskipTests=true
 
 # Build for python API
