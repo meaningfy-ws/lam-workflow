@@ -148,10 +148,18 @@ def tasks():
     else:
         flash(f'Error retrieving reports: {reports_response}', 'error')
 
+    # Sort the list by created_at
+    sorted_reports = sorted(
+        reports,
+        key=lambda x: x['finished_at'],
+        reverse=True  # newest first
+    )
+
+
     return render_template(template_name_or_list='tasks.html',
                            title='LAM Workflow',
                            tasks=tasks,
-                           reports=reports)
+                           reports=sorted_reports)
 
 
 @app.route('/task/<task_id>', methods=['GET'])

@@ -196,10 +196,18 @@ def get_active_tasks():
     tasks, _ = api_get_active_tasks()
     validations, _ = get_validations()
 
+    # Sort the validations list by created_at
+    sorted_validations = sorted(
+        validations,
+        key=lambda x: x['created_at'],
+        reverse=True  # newest first
+    )
+
+
     return render_template(template_name_or_list='tasks/view_active_tasks.html',
                            title='LAM Validator',
                            tasks=tasks,
-                           validations=validations,
+                           validations=sorted_validations,
                            validator_name=config.RDF_VALIDATOR_UI_NAME)
 
 

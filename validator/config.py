@@ -150,7 +150,7 @@ class ValidatorConfig:
 
     @property
     def RDF_VALIDATOR_TIME_FORMAT(self) -> str:
-        value = os.environ.get('RDF_VALIDATOR_TIME_FORMAT', '%d-%b-%YT%H:%M:%S')
+        value = os.environ.get('RDF_VALIDATOR_TIME_FORMAT', '%Y-%m-%dT%H:%M:%S')
         self.logger.debug(value)
         return value
 
