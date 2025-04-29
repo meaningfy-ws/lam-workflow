@@ -1,34 +1,28 @@
 \section{Makefile targets}
 \label{sec:makefile_targets}
-	Makefile targets provide a convenient and easy way of running different tools that the software packages provide. The usage is \textbf{make \textit{target}}.
-	
-	Following is a list of available targets along with the description.
+    Makefile targets provide a convenient and easy way of running different tools that the software packages provide. The usage is \textbf{make \textit{target}}.
+
+    Following is a list of available targets along with the description.
 
 \begin{itemize}
-	\item \textbf{install}
-	- Upgrades PIP to the latest version and installs the local requirements
-	
-	\item \textbf{test}
-	- Runs pytest which in turns executes the unit and BDD tests which are ran using headless Chrome. You need to successfully run the \textbf{install} target beforehand, as it installs the necessary prerequisites (the chrome browser and the driver which corresponds to that specific chrome browser version)
-	
-	\item \textbf{test-with-ui}
-	- Runs pytest which in turns executes the unit and BDD tests which are ran using the fully UI enabled Chrome. You need to successfully run the \textbf{install} target beforehand, as it installs the necessary prerequisites (the chrome browser and the driver which corresponds to that specific chrome browser version). A "Chrome is being controlled by automated test software" message will be displayed on the top. Please wait for the tests to finish and do not interact with the browser window(s) driven by the BDD tests. 
-	
-	\item \textbf{build-services}
-	- Uses docker-compose to build all the services defined in the docker/docker-compose.yml file.
-	
-	\item \textbf{start-services}
-	- Uses docker-compose to start the services defined in the docker/docker-compose.yml file.
-	
-	\item \textbf{stop-services}
-	- Uses docker-compose to stop the services defined in the docker/docker-compose.yml file.
-	
-	\item \textbf{generate-indexes}
-	- Uses \href{https://pypi.org/project/eds4jinja2/}{eds4jinja2} to generate the indexes that will later be sent to ElasticSearch for indexing.
-	
-	\item \textbf{generate-content}
-	- Uses \href{https://pypi.org/project/eds4jinja2/}{eds4jinja2} to generate the content that will be integrated in the portal.
-	
-	\item \textbf{generate-tests-from-features}
-	- Based on the feature files, this target generates the missing Python test code.
+    \item \textbf{start-services}
+    - Uses docker-compose to start all services defined in the docker/docker-compose.yml file. This target depends on \textbf{build-all} and will rebuild all services before starting them.
+
+    \item \textbf{start-\{service\}}
+    - Starts a specific service defined in the docker/docker-compose.yml file. Replace \{service\} with the name of the service you want to start. This target depends on \textbf{build-\{service\}} and will rebuild the specific service before starting it.
+
+    \item \textbf{stop-services}
+    - Uses docker-compose to stop all services defined in the docker/docker-compose.yml file.
+
+    \item \textbf{update-requirements}
+    - Updates project requirements using the uv package manager. This target depends on \textbf{check-uv} and will generate both common.txt (excluding dev and docs groups) and dev.txt (including all groups) requirement files.
+
+    \item \textbf{check-uv}
+    - Verifies that the uv package manager is installed in the system. If not installed, provides installation instructions.
+
+    \item \textbf{build-\{service\}}
+    - Builds a specific service defined in the docker/docker-compose.yml file. Replace \{service\} with the name of the service you want to build. Uses --no-cache option for clean builds.
+
+    \item \textbf{build-all}
+    - Builds all services defined in the docker/docker-compose.yml file using --no-cache option for clean builds.
 \end{itemize}

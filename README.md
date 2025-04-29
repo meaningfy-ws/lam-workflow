@@ -7,22 +7,64 @@ This repository provides the enterprise architecture and description of capabili
 
 The following table outlines the system requirements for each of the project services. Each service is allocated the same resources to ensure consistent performance and scalability across the application stack.
 
+# AWS Installation
 
-## Service Resource Table
-
-| Service Name                     | CPU Value     | Memory Value |
-|----------------------------------|---------------|---------------|
-| lam-validator-api               | 2048 (2 vCPU) | 8 GB RAM      |
-| lam-validator-ui                | 2048 (2 vCPU) | 8 GB RAM      |
-| rdf-validator-celery-worker     | 2048 (2 vCPU) | 8 GB RAM      |
-| redis                           | 2048 (2 vCPU) | 8 GB RAM      |
-| lam-generation-service-api      | 2048 (2 vCPU) | 8 GB RAM      |
-| lam-generation-service-ui       | 2048 (2 vCPU) | 8 GB RAM      |
-| lam-generation-celery-worker    | 2048 (2 vCPU) | 8 GB RAM      |
-| fuseki                          | 2048 (2 vCPU) | 8 GB RAM      |
+To install the software, you need to use an AWS container service. 
+These work like Docker containers and let you run your app and everything 
+it needs in one easy-to-manage package.
 
 
-# Installation
+## Build images
+
+There are two types of images in this project's containerization setup:
+
+1. **Local Dockerfile Images**: Custom-built images from Dockerfiles located in the 'docker' folder. These contain our application-specific configurations and code.
+2. **Docker Hub Images**: Pre-built images pulled directly from Docker Hub, used for supporting services.
+
+| Service Name                 | Image                           | Build type       | Description                               |
+|------------------------------|---------------------------------|------------------|-------------------------------------------|
+| lam-validator-ui             | docker/validator/ui/Dockerfile  | Local Dockerfile | Frontend interface for validation service |
+| lam-validator-api            | docker/validator/api/Dockerfile | Local Dockerfile | Backend API for validation operations     |
+| lam-validator-celery-worker  | docker/validator/api/Dockerfile | Local Dockerfile | Async task processing for validator       |
+| fuseki                       | stain/jena-fuseki:5.1.0         | Dockerhub        | Triple store database                     |
+| redis                        | redis:6-alpine                  | Dockerhub        | In-memory data store                      |
+| lam-generation-service-ui    | docker/lam4doc/ui/Dockerfile    | Local Dockerfile | Frontend for document generation          |
+| lam-generation-service-api   | docker/lam4doc/api/Dockerfile   | Local Dockerfile | Backend API for document generation       |
+| lam-generation-celery-worker | docker/lam4doc/api/Dockerfile   | Local Dockerfile | Async task processing for generation      |
+
+## Service Resources
+
+Each service is allocated dedicated resources to ensure optimal performance and reliability:
+
+| Service Name                    | CPU Value     | Memory Value |
+|---------------------------------|---------------|--------------|
+| lam-validator-api               | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-validator-ui                | 2048 (2 vCPU) | 8 GB RAM     |
+| rdf-validator-celery-worker     | 2048 (2 vCPU) | 8 GB RAM     |
+| redis                           | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-service-api      | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-service-ui       | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-celery-worker    | 2048 (2 vCPU) | 8 GB RAM     |
+| fuseki                          | 2048 (2 vCPU) | 8 GB RAM     |
+
+## Network requirements
+
+All services operate within the same Virtual Private Cloud (VPC) for secure inter-container communication. 
+The network configuration is designed to expose only necessary services to end users while maintaining 
+internal service communication.
+
+| Service Name                 | Port  | User UI |
+|------------------------------|-------|---------|
+| lam-validator-ui             | 10002 | ✔       |
+| lam-generation-service-ui    | 8050  | ✔       |
+| lam-validator-api            | 10001 | X       |
+| lam-generation-service-api   | 4050  | X       |
+| lam-validator-celery-worker  |       | X       |
+| lam-generation-celery-worker |       | X       |
+| redis                        | 6379  | X       |
+| fuseki                       | 3030  | X       |
+
+# Local Installation
 
 ### Install the Docker engine
 
