@@ -13,7 +13,7 @@ services:
     env_file: ../.env
     restart: always
     depends_on:
-      - rdf-validator-celery-worker
+      - lam-validator-celery-worker
     networks:
       - mydefault
 
@@ -33,8 +33,8 @@ services:
     networks:
       - mydefault
 
-  rdf-validator-celery-worker:
-    container_name: rdf-validator-celery-worker
+  lam-validator-celery-worker:
+    container_name: lam-validator-celery-worker
     build:
       context: ..
       dockerfile: ./docker/validator/api/Dockerfile
@@ -52,18 +52,6 @@ services:
     image: redis:6-alpine
     ports:
       - ${RDF_VALIDATOR_REDIS_PORT}:${RDF_VALIDATOR_REDIS_PORT}
-    networks:
-      - mydefault
-
-  validator-dashboard:
-    build:
-      context: ..
-      dockerfile: ./docker/validator/api/Dockerfile
-    command: celery -A validator.adapters.celery.celery_worker --broker=${RDF_VALIDATOR_REDIS_LOCATION}:${RDF_VALIDATOR_REDIS_PORT} flower --port=${RDF_VALIDATOR_FLOWER_PORT}
-    ports:
-      - ${RDF_VALIDATOR_FLOWER_PORT}:${RDF_VALIDATOR_FLOWER_PORT}
-    depends_on:
-      - rdf-validator-celery-worker
     networks:
       - mydefault
 
