@@ -1,13 +1,3 @@
-#!/usr/bin/python3
-
-# config.py
-# Date:  03/11/2020
-# Author: Mihai Coșleț
-# Email: coslet.mihai@gmail.com 
-
-"""
-Project wide configuration file.
-"""
 import logging
 import os
 from pathlib import Path
@@ -156,6 +146,20 @@ class LAMConfig:
     @property
     def LAM_ALL_ZIP_NAME(self) -> str:
         value = 'lam_assets.zip'
+        self.logger.debug(value)
+        return value
+
+    @property
+    def LAM_REDIS_SERVICE(self) -> str:
+        location = os.environ.get('RDF_VALIDATOR_REDIS_LOCATION', 'redis://redis')
+        port = os.environ.get('RDF_VALIDATOR_REDIS_PORT', 6379)
+        value = f'{location}:{port}'
+        self.logger.debug(value)
+        return value
+
+    @property
+    def LAM_REPORTS_DB(self) -> str:
+        value = os.environ.get('LAM_REPORTS_DB', '/usr/src/app/lam_reports')
         self.logger.debug(value)
         return value
 

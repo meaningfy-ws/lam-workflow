@@ -13,7 +13,7 @@ services:
     env_file: ../.env
     restart: always
     depends_on:
-      - rdf-validator-celery-worker
+      - lam-validator-celery-worker
     networks:
       - mydefault
 
@@ -33,12 +33,12 @@ services:
     networks:
       - mydefault
 
-  rdf-validator-celery-worker:
-    container_name: rdf-validator-celery-worker
+  lam-validator-celery-worker:
+    container_name: lam-validator-celery-worker
     build:
       context: ..
       dockerfile: ./docker/validator/api/Dockerfile
-    command: celery -A validator.adapters.celery.celery_worker worker
+    command: celery -A validator.adapters.celery.celery_worker worker -Q validator_tasks
     volumes:
       - ..:/usr/src/app
     env_file: ../.env
@@ -55,18 +55,6 @@ services:
     networks:
       - mydefault
 
-  validator-dashboard:
-    build:
-      context: ..
-      dockerfile: ./docker/validator/api/Dockerfile
-    command: celery -A validator.adapters.celery.celery_worker --broker=${RDF_VALIDATOR_REDIS_LOCATION}:${RDF_VALIDATOR_REDIS_PORT} flower --port=${RDF_VALIDATOR_FLOWER_PORT}
-    ports:
-      - ${RDF_VALIDATOR_FLOWER_PORT}:${RDF_VALIDATOR_FLOWER_PORT}
-    depends_on:
-      - rdf-validator-celery-worker
-    networks:
-      - mydefault
-
   lam-generation-service-api:
     container_name: lam-generation-service-api
     build:
@@ -74,12 +62,15 @@ services:
       dockerfile: ./docker/lam4doc/api/Dockerfile
     volumes:
       - ..:/usr/src/app
+      - lam-reports:/tmp/lam_reports
     ports:
       - ${LAM_API_PORT}:${LAM_API_PORT}
     env_file: ../.env
     restart: always
     networks:
       - mydefault
+    depends_on:
+      - lam-generation-celery-worker
 
   lam-generation-service-ui:
     container_name: lam-generation-service-ui
@@ -96,6 +87,22 @@ services:
       - "lam-generation-service-api"
     networks:
       - mydefault
+
+  lam-generation-celery-worker:
+    container_name: lam-generation-celery-worker
+    build:
+      context: ..
+      dockerfile: ./docker/lam4doc/api/Dockerfile
+    command: celery -A lam4doc.adapters.celery.celery_worker worker --loglevel=info -Q lam4doc_tasks
+    volumes:
+      - ..:/usr/src/app
+      - lam-reports:/tmp/lam_reports
+    env_file: ../.env
+    networks:
+      - mydefault
+    depends_on:
+      - rdf-validator-redis
+      - fuseki
 
   fuseki:
     container_name: lam-fuseki
@@ -115,6 +122,7 @@ services:
 
 volumes:
   lam-fuseki:
+  lam-reports:
 
 networks:
   mydefault:

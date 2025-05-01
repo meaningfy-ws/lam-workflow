@@ -37,6 +37,7 @@
             <div class="input-field">
                 {{ field.label }}
                 {{ field(**kwargs)|safe }}
+                <span class="helper-text">{{ field.description }}</span>
 
                 {% if field.errors %}
 

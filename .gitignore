@@ -162,5 +162,5 @@ junit_report.xml
 fuseki-lam-volume/
 reports/
 db/
-.env.secrets
-.env
+lam_reports
+cache

@@ -18,6 +18,7 @@ from validator.config import config
 
 logger = logging.getLogger(config.RDF_VALIDATOR_LOGGER)
 
+
 def validate_file(data_file: FileStorage, schema_files: List[FileStorage]) -> tuple:
     """
     Method to connect to the validator api to validate a file.
@@ -66,18 +67,20 @@ def validate_sparql_endpoint(sparql_endpoint_url: str, schema_files: List[FileSt
     :param graphs: An optional list of named graphs to restrict the scope of the validation
     :return:
     """
-    data = {
-        'sparql_endpoint_url': sparql_endpoint_url,
-    }
+    # Create a combined dictionary for both data and files
+    files = {}
+
+    # Add data fields to the files dictionary
+    files['sparql_endpoint_url'] = (None, sparql_endpoint_url, 'text/plain')
 
     if graphs:
-        data['graphs'] = graphs
+        files['graphs'] = (None, ' '.join(graphs) if isinstance(graphs, list) else graphs, 'text/plain')
 
-    files = dict()
+    # Add schema files
     for index, schema_file in enumerate(schema_files):
         files[f'schema_file{index}'] = (schema_file.filename, schema_file.stream, schema_file.mimetype)
 
-    response = requests.post(config.RDF_VALIDATOR_API_SERVICE + '/validate/shapes/url', data=data, files=files)
+    response = requests.post(config.RDF_VALIDATOR_API_SERVICE + '/validate/shapes/url', files=files)
     return response.content, response.status_code
 
 
@@ -175,3 +178,22 @@ def get_report(validation_id: str, report_type: str) -> tuple:
                                 'report_type': report_type
                             })
     return response.content, response.status_code
+
+
+def get_task(task_id: str) -> tuple:
+    """
+    Method to get details of a specific task from the API.
+    :param task_id: ID of the task to retrieve
+    :return: task details and status code
+    :rtype: dict, int
+    """
+    try:
+        response = requests.get(f'{config.RDF_VALIDATOR_API_SERVICE}/tasks/{task_id}')
+        response.raise_for_status()
+        return response.json(), response.status_code
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error connecting to API: {str(e)}")
+        return {"error": str(e)}, 500
+    except ValueError as e:  # This includes JSONDecodeError
+        logger.error(f"Error parsing API response: {str(e)}")
+        return {"error": f"Failed to parse response: {str(e)}"}, 500

@@ -75,7 +75,7 @@ class ValidatorConfig:
                 and any(Path(os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION')).iterdir()):
             value = os.environ.get('RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION')
         else:
-            value = str(Path(__file__).parents[1] / 'resources/templates/html')
+            value = str(Path(__file__).parents[1] / 'resources/templates/validator_report')
         self.logger.debug(value)
         return value
 
@@ -150,7 +150,7 @@ class ValidatorConfig:
 
     @property
     def RDF_VALIDATOR_TIME_FORMAT(self) -> str:
-        value = os.environ.get('RDF_VALIDATOR_TIME_FORMAT', '%d-%b-%YT%H:%M:%S')
+        value = os.environ.get('RDF_VALIDATOR_TIME_FORMAT', '%Y-%m-%dT%H:%M:%S')
         self.logger.debug(value)
         return value
 

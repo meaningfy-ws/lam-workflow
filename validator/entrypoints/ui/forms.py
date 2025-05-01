@@ -43,8 +43,8 @@ class SHACLShapesDataFileForm(SHACLShapesForm):
 
 
 class SHACLShapesURLForm(SHACLShapesForm):
-    endpoint_url = StringField('Endpoint URL', validators=[DataRequired()])
-    graphs = TextAreaField('Graphs', description='Separate them through spaces. example: graph1 graph2')
+    endpoint_url = StringField('Endpoint URL', validators=[DataRequired()], description="Use endpoint and dataset name. Example: http://lam-fuseki:3030/validator")
+    graphs = TextAreaField('Graphs', description='Separate them through spaces. Example: graph1 graph2')
 
 
 class RequestReport(FlaskForm):

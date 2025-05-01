@@ -28,16 +28,21 @@ def async_validate_file(self, uid: str, data_file: str, shacl_shapes: list, db_c
     :param db_cleanup_location: location to cleanup
     :param application_profile: application profile if provided
     """
-    report_path = build_report_from_file(location=db_cleanup_location,
-                                         data_file=str(data_file),
-                                         schema_files=shacl_shapes,
-                                         application_profile=application_profile,
-                                         uid=uid)
+    try:
+        report_path = build_report_from_file(location=db_cleanup_location,
+                                             data_file=str(data_file),
+                                             schema_files=shacl_shapes,
+                                             application_profile=application_profile,
+                                             uid=uid)
 
-    shutil.rmtree(db_cleanup_location)
-
-    logger.debug(f'finish file validation  at {report_path}')
-    return True
+        logger.debug(f'finish file validation at {report_path}')
+        return True
+    finally:
+        if db_cleanup_location:
+            try:
+                shutil.rmtree(db_cleanup_location)
+            except Exception as cleanup_error:
+                logger.warning(f'Cleanup failed: {cleanup_error}')
 
 
 @celery_worker.task(name=CELERY_VALIDATE_URL, bind=True)
@@ -54,15 +59,19 @@ def async_validate_url(self, uid: str, sparql_endpoint: str, graphs: list, shacl
     :param db_cleanup_location: location to cleanup
     :param application_profile: application profile if provided
     """
-    report_path = build_report_from_url(location=db_cleanup_location,
-                                        sparql_endpoint=sparql_endpoint,
-                                        graphs=graphs,
-                                        schema_files=shacl_shapes,
-                                        application_profile=application_profile,
-                                        uid=uid)
+    try:
+        report_path = build_report_from_url(location=db_cleanup_location,
+                                            sparql_endpoint=sparql_endpoint,
+                                            graphs=graphs,
+                                            schema_files=shacl_shapes,
+                                            application_profile=application_profile,
+                                            uid=uid)
 
-    if db_cleanup_location:
-        shutil.rmtree(db_cleanup_location)
-
-    logger.debug(f'finish url validation  at {report_path}')
-    return True
+        logger.debug(f'finish url validation at {report_path}')
+        return True
+    finally:
+        if db_cleanup_location:
+            try:
+                shutil.rmtree(db_cleanup_location)
+            except Exception as cleanup_error:
+                logger.warning(f'Cleanup failed: {cleanup_error}')

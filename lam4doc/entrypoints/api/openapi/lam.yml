@@ -24,6 +24,20 @@ components:
       schema:
         type: string
       description: Report type to be returned
+    taskIdParam:
+      in: path
+      name: task_id
+      required: true
+      schema:
+        type: string
+      description: ID of the task
+    reportIdParam:
+      in: path
+      name: report_id
+      required: true
+      schema:
+        type: string
+      description: ID of the report
   schemas:
     UPLOAD_SCHEMA:
       type: object
@@ -45,6 +59,36 @@ components:
           type: string
       required:
         - dataset_name
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: ID of the created task
+    TaskStatusResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: ID of the task
+        task_status:
+          type: string
+          description: Current status of the task (PENDING, STARTED, SUCCESS, FAILURE, etc.)
+        task_result:
+          type: string
+          description: Result of the task if completed
+    ReportResponse:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Unique identifier of the report
+        type:
+          type: string
+          description: Type of the report (html, pdf, indexes, all)
+        filename:
+          type: string
+          description: Filename of the report
 
 paths:
   /:
@@ -67,6 +111,21 @@ paths:
           description: OK.
         5XX:
           description: Unexpected Error.
+  /generate-report-async:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.generate_lam_report_async
+      description: Endpoint to generate the LAM report asynchronously.
+      parameters:
+        - $ref: '#/components/parameters/extensionParam'
+      responses:
+        200:
+          description: The task has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        5XX:
+          description: Unexpected Error.
   /generate-indexes:
     get:
       operationId: lam4doc.entrypoints.api.handlers.generate_indexes
@@ -76,6 +135,19 @@ paths:
           description: OK.
         5XX:
           description: Unexpected Error.
+  /generate-indexes-async:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.generate_indexes_async
+      description: Endpoint to generate the LAM indexes asynchronously.
+      responses:
+        200:
+          description: The task has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        5XX:
+          description: Unexpected Error.
   /lam-files:
     get:
       operationId: lam4doc.entrypoints.api.handlers.get_lam_files
@@ -83,6 +155,19 @@ paths:
       responses:
         200:
           description: OK.
+        5XX:
+          description: Unexpected Error.
+  /lam-files-async:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.get_lam_files_async
+      description: Endpoint to generate all LAM files asynchronously.
+      responses:
+        200:
+          description: The task has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
         5XX:
           description: Unexpected Error.
   /upload-rdf:
@@ -98,5 +183,98 @@ paths:
       responses:
         200:
           description: OK.
+        5XX:
+          description: Unexpected Error.
+  /tasks:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.get_active_tasks
+      description: Get all active celery tasks.
+      responses:
+        200:
+          description: List of active tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        5XX:
+          description: Unexpected Error.
+  /tasks/{task_id}:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.get_task_status
+      description: Get status of a specific task.
+      parameters:
+        - $ref: '#/components/parameters/taskIdParam'
+      responses:
+        200:
+          description: Task status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskStatusResponse'
+        404:
+          description: Task not found.
+        5XX:
+          description: Unexpected Error.
+  /tasks/{task_id}/revoke:
+    delete:
+      operationId: lam4doc.entrypoints.api.handlers_async.stop_running_task
+      description: Stop a running task.
+      parameters:
+        - $ref: '#/components/parameters/taskIdParam'
+      responses:
+        200:
+          description: Task set for revoking.
+        406:
+          description: Task already finished executing or does not exist.
+        5XX:
+          description: Unexpected Error.
+  /reports:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.get_reports
+      description: Get all available reports.
+      responses:
+        200:
+          description: List of available reports.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportResponse'
+        5XX:
+          description: Unexpected Error.
+    delete:
+      operationId: lam4doc.entrypoints.api.handlers_async.delete_reports
+      description: Delete all reports.
+      responses:
+        200:
+          description: All reports removed successfully.
+        5XX:
+          description: Unexpected Error.
+  /reports/{report_id}:
+    get:
+      operationId: lam4doc.entrypoints.api.handlers_async.download_report
+      description: Download a specific report.
+      parameters:
+        - $ref: '#/components/parameters/reportIdParam'
+      responses:
+        200:
+          description: The report file.
+        404:
+          description: Report not found.
+        5XX:
+          description: Unexpected Error.
+    delete:
+      operationId: lam4doc.entrypoints.api.handlers_async.delete_report
+      description: Delete a specific report.
+      parameters:
+        - $ref: '#/components/parameters/reportIdParam'
+      responses:
+        200:
+          description: Report removed successfully.
+        404:
+          description: Report not found.
         5XX:
           description: Unexpected Error.

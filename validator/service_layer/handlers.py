@@ -99,12 +99,10 @@ def run_sparql_endpoint_validator(sparql_endpoint_url: str, graphs_uris: List[st
                                                       "-g", graph_param)
     logger.debug("RDFUnitWrapper finished with output:\n" + cli_output)
 
-    parsed_uri = urlparse(sparql_endpoint_url)
-    output_file_name = parsed_uri.netloc.replace(":", "_") + \
-                       parsed_uri.path.replace("/", "_") + \
-                       ".shaclTestCaseResult"
-    output_file_path = Path(output) / 'results' / output_file_name
-    return str(output_file_path) + ".html", str(output_file_path) + ".ttl"
+    output_file_path = Path(output) / 'results'
+    html_file = next(output_file_path.glob('*.html'), None)
+    ttl_file = next(output_file_path.glob('*.ttl'), None)
+    return str(html_file), str(ttl_file)
 
 
 def build_report(temp_dir: str, template_location: str, additional_config: dict):

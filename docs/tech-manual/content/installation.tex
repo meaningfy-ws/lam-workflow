@@ -19,8 +19,8 @@ There is a range of ports that must be available on the host machine as they wil
 	%
 	\endlastfoot
 	%
-	LAM validator & 10002       & 10001          &     rdf-validator -shacl-shape          \\* \hline
-	LAM Generation Service & 8050         & 4050               &                \\* \hline
+	LAM validator & 10002       & 10001          &     lam-validator -shacl-shape          \\* \hline
+	LAM Generation Service & 8050         & 4050               &         lam-reports       \\* \hline
 	LAM dedicated triple store & 3010                 &          &    lam-fuseki            \\* \hline
 	\caption{Port usage inventory}
 	\label{tab:port-inventory}                                               \\
@@ -32,10 +32,133 @@ The minimal hardware requirements are as follows
 	\item CPU: Dual core 3Ghz
 	\item RAM: 8Gb
 	\item SDD system: 2Gb
-	\item SDD data: 8Gb 
+	\item SDD data: 8Gb
 \end{enumerate}
 
-\section{Installation}
+\section{AWS Installation}
+\label{sec:aws-installation}
+
+The software deployment on AWS utilizes container services, which function similarly to Docker containers, allowing you to run your application and its dependencies in a unified, manageable package.
+
+\subsection{Build Images}
+\label{subsec:build-images}
+
+The containerization setup includes two types of images:
+
+\begin{enumerate}
+    \item \textbf{Local Dockerfile Images}: Custom-built images from Dockerfiles located in the 'docker' folder, containing application-specific configurations and code.
+    \item \textbf{Docker Hub Images}: Pre-built images pulled directly from Docker Hub, used for supporting services.
+\end{enumerate}
+
+\begin{longtable}[c]{@{}p{6cm}p{6cm}p{2cm}@{}}
+    \toprule
+    Service Name & Image & Build Type \\* \midrule
+    \endfirsthead
+    %
+    \multicolumn{3}{c}%
+    {{\bfseries Table \thetable\ continued from previous page}} \\
+    \toprule
+    Service Name & Image & Build Type \\* \midrule
+    \endhead
+    %
+    \bottomrule
+    \endfoot
+    %
+    \endlastfoot
+    %
+    lam-validator-ui & docker/validator/ui/Dockerfile & Local \\* \hline
+    lam-validator-api & docker/validator/api/Dockerfile & Local \\* \hline
+    lam-validator-celery-worker & docker/validator/api/Dockerfile & Local \\* \hline
+    fuseki & stain/jena-fuseki:5.1.0 & Dockerhub \\* \hline
+    redis & redis:6-alpine & Dockerhub \\* \hline
+    lam-generation-service-ui & docker/lam4doc/ui/Dockerfile & Local \\* \hline
+    lam-generation-service-api & docker/lam4doc/api/Dockerfile & Local \\* \hline
+    lam-generation-celery-worker & docker/lam4doc/api/Dockerfile & Local \\*
+    \caption{Service Images and Build Types}
+    \label{tab:service-images}
+\end{longtable}
+
+The services provided include:
+\begin{itemize}
+    \item \textbf{lam-validator-ui}: Frontend interface providing user access to validation services
+    \item \textbf{lam-validator-api}: Backend API handling validation operations
+    \item \textbf{lam-validator-celery-worker}: Asynchronous task processing component for the validator
+    \item \textbf{fuseki}: Triple store database for data storage
+    \item \textbf{redis}: In-memory data store for caching and message queuing
+    \item \textbf{lam-generation-service-ui}: Frontend interface for document generation
+    \item \textbf{lam-generation-service-api}: Backend API managing document generation operations
+    \item \textbf{lam-generation-celery-worker}: Asynchronous task processing for document generation
+\end{itemize}
+
+\subsection{Service Resources}
+
+\label{subsec:service-resources}
+
+Each service is allocated dedicated resources to ensure optimal performance and reliability:
+
+\begin{longtable}[c]{@{}p{6cm}p{3cm}p{3cm}@{}}
+    \toprule
+    Service Name & CPU Value & Memory Value \\* \midrule
+    \endfirsthead
+    %
+    \multicolumn{3}{c}%
+    {{\bfseries Table \thetable\ continued from previous page}} \\
+    \toprule
+    Service Name & CPU Value & Memory Value \\* \midrule
+    \endhead
+    %
+    \bottomrule
+    \endfoot
+    %
+    \endlastfoot
+    %
+    lam-validator-api & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    lam-validator-ui & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    rdf-validator-celery-worker & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    redis & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    lam-generation-service-api & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    lam-generation-service-ui & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    lam-generation-celery-worker & 2048 (2 vCPU) & 8 GB RAM \\* \hline
+    fuseki & 2048 (2 vCPU) & 8 GB RAM \\*
+    \caption{Service Resource Allocations}
+    \label{tab:service-resources}
+\end{longtable}
+
+\subsection{Network Requirements}
+\label{subsec:network-requirements}
+
+All services operate within the same Virtual Private Cloud (VPC) for secure inter-container communication. The network configuration exposes only necessary services to end users while maintaining internal service communication.
+
+\begin{longtable}[c]{@{}p{6cm}p{2cm}p{3cm}@{}}
+    \toprule
+    Service Name & Port & User UI Access \\* \midrule
+    \endfirsthead
+    %
+    \multicolumn{3}{c}%
+    {{\bfseries Table \thetable\ continued from previous page}} \\
+    \toprule
+    Service Name & Port & User UI Access \\* \midrule
+    \endhead
+    %
+    \bottomrule
+    \endfoot
+    %
+    \endlastfoot
+    %
+    lam-validator-ui & 10002 & Yes \\* \hline
+    lam-generation-service-ui & 8050 & Yes \\* \hline
+    lam-validator-api & 10001 & No \\* \hline
+    lam-generation-service-api & 4050 & No \\* \hline
+    lam-validator-celery-worker & -- & No \\* \hline
+    lam-generation-celery-worker & -- & No \\* \hline
+    redis & 6379 & No \\* \hline
+    fuseki & 3030 & No \\*
+    \caption{Service Network Configuration}
+    \label{tab:network-config}
+\end{longtable}
+
+
+\section{Local Installation}
 \label{sec:installation}
 
 In order to run the services it is necessary to have Docker \citep{docker} service and docker-compose tool installed. To install them follow the instructions provided on the official websites
@@ -56,7 +179,7 @@ newgrp docker
 
 Please note that the \textit{docker.io} package si installed rather than the \textit{docker-ce} one.
 
-Next, to launch the services, clone the Git repository or unzip the project containing the \textit{docker-compose.yml}, \textit{.env} file and the \textit{Makefile}. 
+Next, to launch the services, clone the Git repository or unzip the project containing the \textit{docker-compose.yml}, \textit{.env} file and the \textit{Makefile}.
 
 \begin{lstlisting}[language=bash,]
 # example of cloning the project
@@ -70,7 +193,7 @@ You may choose to adjust these files as necessary on your system. Then change di
 make start-services
 \end{lstlisting}
 
-To stop the services run 
+To stop the services run
 
 \begin{lstlisting}[language=bash,]
 make stop-services
@@ -81,7 +204,6 @@ Downloading the Docker images will be triggered automatically on first request t
 To start the services using Makefile
 
 \begin{lstlisting}[language=bash,]
-make location=</your-custom/shapes/location> validator-set-shacl-shapes
 make start-services
 \end{lstlisting}
 
@@ -105,13 +227,13 @@ docker rm temp
 then start the services
 
 \begin{lstlisting}[language=bash,]
-docker-compose --file docker/docker-compose.yml --env-file docker/.env up -d
+docker-compose --file docker/docker-compose.yml --env-file .env up -d
 \end{lstlisting}
 
 To stop the services run
 
 \begin{lstlisting}[language=bash,]
-docker-compose --file docker/docker-compose.yml --env-file docker/.env down
+docker-compose --file docker/docker-compose.yml --env-file .env down
 \end{lstlisting}
 
 In case you need to rebuild and erase entirely the old containers and volumes from all services, please use the following set of commands.

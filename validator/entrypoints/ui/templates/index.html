@@ -3,54 +3,14 @@
 
 {% block app_content %}
     <h1 id="title">{{ validator_name }}</h1>
-    <table class="table highlight ">
-        <thead class="thead-dark">
-        <tr>
-            <th scope="col">ID</th>
-            <th scope="col">type</th>
-            <th scope="col">application profile</th>
-            <th scope="col">url</th>
-            <th scope="col">file</th>
-            <th scope="col">created at</th>
-            <th scope="col">Actions</th>
-            <th scope="col">Remove</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for validation in validations %}
-            {% if validation %}
-                <tr>
-                    <th scope="row">{{ validation.uid }}</th>
-                    <td>{{ validation.type }}</td>
-                    <td>{{ validation.application_profile }}</td>
-                    <td>{{ validation.url }}</td>
-                    <td>{{ validation.file }}</td>
-                    <td>{{ validation.created_at }}</td>
-                    <td>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='html') }}"
-                           id="get-html-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get Custom HTML report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='json') }}"
-                           id="get-html-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get Custom JSON report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='ttl') }}"
-                           id="get-ttl-{{ validation.uid }}"
-                           style="margin-bottom: 5px"
-                           class="btn btn-file blue darken-2">Get TTL report</a>
-                        <a href="{{ url_for('download_report', validation_id=validation.uid, report_type='zip') }}"
-                           id="get-zip-{{ validation.uid }}"
-                           class="btn btn-file blue darken-2">Get all files</a>
-                    </td>
-                    <td>
-                        <a href="{{ url_for('delete_validation', validation_id=validation.uid) }}"
-                           id="remove-{{ validation.uid }}"
-                           class="btn btn-file red darken-2">Remove</a>
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('validate_shapes_file') }}"
+           id="validate-shapes-file"
+           class="btn btn-file blue darken-2">Validate File</a>
+        <a href="{{ url_for('validate_sparql_endpoint') }}"
+           id="validate-sparql-endpoint"
+           class="btn btn-file green darken-1">Validate SPARQL Endpoint</a>
+    </div>
 {% endblock %}

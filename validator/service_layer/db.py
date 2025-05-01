@@ -18,7 +18,7 @@ def save_data_for_validation(file_to_validate: FileStorage, shacl_shapes: list,
     :return: local storage location, validation file location, list of shapes locations
     """
     location_to_save = Path(location) / str(uuid4())
-    location_to_save.mkdir()
+    location_to_save.mkdir(parents=True, exist_ok=True)
 
     try:
         saved_file_to_validate = save_file(file_to_validate, location_to_save)

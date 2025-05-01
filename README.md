@@ -3,7 +3,68 @@ The deployment package for the LAM services.
 
 This repository provides the enterprise architecture and description of capabilities necessary for the digital transformation of the asset publishing life-cycle workflow.   
 
-# Installation
+# System Requirements for Project Services
+
+The following table outlines the system requirements for each of the project services. Each service is allocated the same resources to ensure consistent performance and scalability across the application stack.
+
+# AWS Installation
+
+To install the software, you need to use an AWS container service. 
+These work like Docker containers and let you run your app and everything 
+it needs in one easy-to-manage package.
+
+
+## Build images
+
+There are two types of images in this project's containerization setup:
+
+1. **Local Dockerfile Images**: Custom-built images from Dockerfiles located in the 'docker' folder. These contain our application-specific configurations and code.
+2. **Docker Hub Images**: Pre-built images pulled directly from Docker Hub, used for supporting services.
+
+| Service Name                 | Image                           | Build type       | Description                               |
+|------------------------------|---------------------------------|------------------|-------------------------------------------|
+| lam-validator-ui             | docker/validator/ui/Dockerfile  | Local Dockerfile | Frontend interface for validation service |
+| lam-validator-api            | docker/validator/api/Dockerfile | Local Dockerfile | Backend API for validation operations     |
+| lam-validator-celery-worker  | docker/validator/api/Dockerfile | Local Dockerfile | Async task processing for validator       |
+| fuseki                       | stain/jena-fuseki:5.1.0         | Dockerhub        | Triple store database                     |
+| redis                        | redis:6-alpine                  | Dockerhub        | In-memory data store                      |
+| lam-generation-service-ui    | docker/lam4doc/ui/Dockerfile    | Local Dockerfile | Frontend for document generation          |
+| lam-generation-service-api   | docker/lam4doc/api/Dockerfile   | Local Dockerfile | Backend API for document generation       |
+| lam-generation-celery-worker | docker/lam4doc/api/Dockerfile   | Local Dockerfile | Async task processing for generation      |
+
+## Service Resources
+
+Each service is allocated dedicated resources to ensure optimal performance and reliability:
+
+| Service Name                    | CPU Value     | Memory Value |
+|---------------------------------|---------------|--------------|
+| lam-validator-api               | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-validator-ui                | 2048 (2 vCPU) | 8 GB RAM     |
+| rdf-validator-celery-worker     | 2048 (2 vCPU) | 8 GB RAM     |
+| redis                           | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-service-api      | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-service-ui       | 2048 (2 vCPU) | 8 GB RAM     |
+| lam-generation-celery-worker    | 2048 (2 vCPU) | 8 GB RAM     |
+| fuseki                          | 2048 (2 vCPU) | 8 GB RAM     |
+
+## Network requirements
+
+All services operate within the same Virtual Private Cloud (VPC) for secure inter-container communication. 
+The network configuration is designed to expose only necessary services to end users while maintaining 
+internal service communication.
+
+| Service Name                 | Port  | User UI |
+|------------------------------|-------|---------|
+| lam-validator-ui             | 10002 | ✔       |
+| lam-generation-service-ui    | 8050  | ✔       |
+| lam-validator-api            | 10001 | X       |
+| lam-generation-service-api   | 4050  | X       |
+| lam-validator-celery-worker  |       | X       |
+| lam-generation-celery-worker |       | X       |
+| redis                        | 6379  | X       |
+| fuseki                       | 3030  | X       |
+
+# Local Installation
 
 ### Install the Docker engine
 
@@ -23,6 +84,60 @@ git clone https://github.com/meaningfy-ws/lam-workflow.git
 
 or unzip the project that you received.
 
+### Prepare [`.env`](.env) file
+
+Ensure that you have .env file in project root folder with following minimal variables:
+```env
+
+# The following are secret environment variables:
+
+RDF_VALIDATOR_API_PORT=
+RDF_VALIDATOR_UI_PORT=
+RDF_VALIDATOR_API_LOCATION=
+RDF_VALIDATOR_UI_LOCATION=
+RDF_VALIDATOR_GUNICORN_TIMEOUT=
+RDF_VALIDATOR_GUNICORN_API_WORKERS=
+RDF_VALIDATOR_GUNICORN_UI_WORKERS=
+RDF_VALIDATOR_UI_NAME=
+RDF_VALIDATOR_REPORT_TITLE=
+RDF_VALIDATOR_TEMPLATE_LOCATION=
+RDF_VALIDATOR_HTML_REPORT_TEMPLATE_LOCATION=
+RDF_VALIDATOR_SHACL_SHAPES_LOCATION=
+RDF_VALIDATOR_APS_LOCATION=
+RDF_VALIDATOR_ALLOWS_EXTRA_SHAPES=
+LAM_GUNICORN_TIMEOUT=
+LAM_API_LOCATION=
+LAM_API_PORT=
+LAM_GUNICORN_API_WORKERS=
+LAM_UI_LOCATION=
+LAM_UI_PORT=
+LAM_GUNICORN_UI_WORKERS=
+LAM_FUSEKI_DATA_FOLDER=
+LAM_FUSEKI_LOCATION=
+LAM_FUSEKI_PORT=
+LAM_FUSEKI_QUERY_URL=
+LAM_FUSEKI_USERNAME=
+LAM_FUSEKI_PASSWORD=
+LAM_FUSEKI_ADMIN_PASSWORD=
+LAM_FUSEKI_EXTERNAL_PORT=
+LAM_FUSEKI_JVM_ARGS=
+RDF_VALIDATOR_API_SECRET_KEY=
+RDF_VALIDATOR_UI_SECRET_KEY=
+RDF_VALIDATOR_DEBUG=
+RDFUNIT_QUERY_DELAY_MS=
+RDF_VALIDATOR_REDIS_PORT=
+RDF_VALIDATOR_REDIS_LOCATION=
+RDF_VALIDATOR_FLOWER_PORT=
+
+# The following are technical environment variables:
+
+PROJECT_PATH=
+ENV_FILE_PATH=
+INFRA_FOLDER_PATH=
+PROJECT_NAME=
+
+```
+
 ### Starting the services
 
 Navigate to the repository "lam-workflow" (where Git cloned the repository) or to the location where you unzipped the project.
@@ -39,17 +154,6 @@ To stop the services run:
 ```shell script
 make stop-services
 ```
-
-### Makefile targets
-
-**validator-set-report-template**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom validator report template inside the container's volume
-
-
-**validator-set-shacl-shapes**
-- Syntax: **make location=</your-custom/shapes/location> validator-set-shacl-shapes**
-- Used for: copying your custom SHACL shapes inside the container's volume
 
 
 # Usage
@@ -71,7 +175,7 @@ For usage examples check  the **Usage** chapter from the [tech-manual.pdf](docs/
 * `README.md` - this file
 
 # Services and their respective configurations
-Please note that the configured values can be changed by modifying the [`/docker/.env`](.env) file.
+Please note that the configured values can be changed by modifying the [`.env`](.env) file.
 
 ### LAM Validator API
 
