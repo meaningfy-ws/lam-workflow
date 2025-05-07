@@ -235,6 +235,12 @@ class ValidatorConfig:
         self.logger.debug(value)
         return value
 
+    @property
+    def LAM_VALIDATOR_WORKER_NAME_PREFIX(self) -> str:
+        value = os.environ.get('LAM_VALIDATOR_WORKER_NAME_PREFIX', "lam_validator_main")
+        self.logger.debug(value)
+        return value
+
 
 config = ValidatorConfig()
 

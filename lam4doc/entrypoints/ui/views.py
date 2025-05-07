@@ -6,7 +6,9 @@ import tempfile
 from json import loads
 
 from flask import render_template, flash, redirect, url_for, send_file, request
+from pytz import timezone
 
+from lam4doc.config import config
 from lam4doc.entrypoints.ui import app
 from lam4doc.entrypoints.ui.api_wrapper import upload_rdf as api_upload_rdf, \
     get_lam_report_async as api_get_lam_report_async, get_indexes_async as api_get_indexes_async, \
@@ -234,10 +236,16 @@ def stop_task(task_id):
 
     response, status = api_stop_running_task(task_id)
 
-    if status != 200:
+    if status != 200 and status != 406:
         flash(f'Error stopping task: {response}', 'error')
     else:
         flash('Task stopped successfully', 'success')
 
     # Redirect back to the page that called this route
     return redirect(request.referrer or url_for('tasks'))
+
+
+@app.template_filter('isoformat')
+def isoformat_filter(ts):
+    from datetime import datetime
+    return datetime.fromtimestamp(ts, tz=timezone(config.LAM4DOC_TIMEZONE)).strftime(config.LAM4DOC_TIME_FORMAT) if ts else ""

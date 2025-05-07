@@ -50,7 +50,7 @@ def copy_report_files(html_report: str, ttl_report: str, custom_html_report: str
     :return: location of copied reports
     """
     reports_location = Path(config.RDF_VALIDATOR_REPORTS_DB) / build_unique_name(timestamp)
-    reports_location.mkdir()
+    reports_location.mkdir(parents=True, exist_ok=True)
 
     copy_file_to_destination(html_report, str(reports_location / config.RDF_VALIDATOR_HTML_REPORT_NAME))
     copy_file_to_destination(ttl_report, str(reports_location / config.RDF_VALIDATOR_TTL_REPORT_NAME))

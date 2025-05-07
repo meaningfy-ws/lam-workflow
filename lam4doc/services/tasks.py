@@ -20,14 +20,22 @@ def flatten_active_tasks(tasks: dict) -> list:
 
 def retrieve_active_tasks(worker=None) -> dict:
     """
-    Get all currently running tasks
-    :param worker: which celery worker to get tasks from
-    :return: active celery tasks
+    Get all currently running tasks, filtered by worker name prefix
+    :param worker: which celery worker app to use
+    :return: active celery tasks from matching workers
     """
     worker = worker if worker else celery_worker
     inspector = worker.control.inspect()
+    active_tasks = inspector.active() or {}
 
-    return inspector.active()
+    worker_name_prefix = config.LAM4DOC_WORKER_NAME_PREFIX
+
+    filtered_tasks = {}
+    for worker_name, tasks in active_tasks.items():
+        if worker_name.startswith(worker_name_prefix):
+            filtered_tasks[worker_name] = tasks
+
+    return filtered_tasks
 
 
 def retrieve_task(task_id: str, worker=None) -> AsyncResult:
