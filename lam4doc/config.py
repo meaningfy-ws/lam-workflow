@@ -163,6 +163,23 @@ class LAMConfig:
         self.logger.debug(value)
         return value
 
+    @property
+    def LAM4DOC_WORKER_NAME_PREFIX(self) -> str:
+        value = os.environ.get('LAM4DOC_WORKER_NAME_PREFIX')
+        return value
+
+    @property
+    def LAM4DOC_TIMEZONE(self) -> str:
+        value = os.environ.get('LAM4DOC_TIMEZONE', 'UTC')
+        self.logger.debug(value)
+        return value
+
+    @property
+    def LAM4DOC_TIME_FORMAT(self) -> str:
+        value = os.environ.get('LAM4DOC_TIME_FORMAT', '%Y-%m-%dT%H:%M:%S')
+        self.logger.debug(value)
+        return value
+
 
 config = LAMConfig()
 

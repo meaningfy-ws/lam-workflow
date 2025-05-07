@@ -13,9 +13,8 @@
                     <thead>
                         <tr>
                             <th>Task ID</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Created</th>
+                            <th>Task Type</th>
+                            <th>Created at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -24,16 +23,13 @@
                             <tr>
                                 <td><a href="{{ url_for('task_status', task_id=task.id) }}">{{ task.id }}</a></td>
                                 <td>{{ task.type }}</td>
-                                <td>{{ task.status }}</td>
-                                <td>{{ task.created_at }}</td>
+                                <td>{{ task.time_start | isoformat }}</td>
                                 <td>
-                                    {% if task.status == 'PENDING' or task.status == 'RUNNING' %}
-                                        <form method="POST" action="{{ url_for('stop_task', task_id=task.id) }}">
-                                            <button type="submit" class="btn-small red darken-2">
-                                                Stop <i class="material-icons right">stop</i>
-                                            </button>
-                                        </form>
-                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('stop_task', task_id=task.id) }}" style="margin: 0;">
+                                        <button type="submit" class="btn-small red darken-2" style="width: 60%; text-transform: none;">
+                                            Stop task<i class="material-icons right">do_disturb_on</i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -53,8 +49,8 @@
                     <thead>
                         <tr>
                             <th>Report ID</th>
-                            <th>Type</th>
-                            <th>Finished</th>
+                            <th>Report Type</th>
+                            <th>Finished at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -65,12 +61,14 @@
                                 <td>{{ report.type }}</td>
                                 <td>{{ report.finished_at }}</td>
                                 <td>
-                                    <a href="{{ url_for('download_report', report_id=report.uid) }}" class="btn-small blue darken-2">
-                                        Download <i class="material-icons right">file_download</i>
+                                    <a href="{{ url_for('download_report', report_id=report.uid) }}"
+                                       class="btn-small blue darken-2"
+                                       style="display: inline-block; width: 70%; margin-bottom: 8px; text-transform: none;">
+                                        Download report<i class="material-icons right">file_download</i>
                                     </a>
-                                    <form method="POST" action="{{ url_for('delete_report', report_id=report.uid) }}" style="display: inline-block;">
-                                        <button type="submit" class="btn-small red darken-2">
-                                            Delete <i class="material-icons right">delete</i>
+                                    <form method="POST" action="{{ url_for('delete_report', report_id=report.uid) }}" style="margin: 0;">
+                                        <button type="submit" class="btn-small red darken-2" style="width: 70%; text-transform: none;">
+                                            Delete report<i class="material-icons right">delete</i>
                                         </button>
                                     </form>
                                 </td>

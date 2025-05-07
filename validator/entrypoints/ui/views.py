@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from flask import render_template, flash, redirect, url_for, send_from_directory
+from pytz import timezone
 
 from validator.config import config
 from validator.entrypoints.ui import app
@@ -242,9 +243,15 @@ def revoke_task(task_id: str):
     logger.debug(f'request revoking for : {task_id}')
     message, status = api_revoke_task(task_id)
     if status == 200:
-        flash(message, 'success')
+        flash("Task stopped successfully", 'success')
     else:
         logger.exception(message)
         flash(message, 'error')
 
     return redirect(url_for('get_active_tasks'))
+
+
+@app.template_filter('isoformat')
+def isoformat_filter(ts):
+    from datetime import datetime
+    return datetime.fromtimestamp(ts, tz=timezone(config.RDF_VALIDATOR_TIMEZONE)).strftime(config.RDF_VALIDATOR_TIME_FORMAT) if ts else ""

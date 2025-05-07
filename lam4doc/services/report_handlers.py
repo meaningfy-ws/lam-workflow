@@ -6,6 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 
+from pytz import timezone
+
 from lam4doc.config import config
 
 logger = logging.getLogger(config.LAM_LOGGER)
@@ -56,7 +58,7 @@ def add_report_metadata(uid: str, report_type: str, file_path: str, db_location:
         'type': report_type,
         'file_path': file_path,
         'filename': Path(file_path).name,
-        'finished_at': f'{datetime.now().isoformat()}',
+        'finished_at': datetime.now(tz=timezone(config.LAM4DOC_TIMEZONE)).strftime(config.LAM4DOC_TIME_FORMAT),
     }
 
     save_report_metadata(metadata, db_location)

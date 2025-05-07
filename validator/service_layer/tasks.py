@@ -3,6 +3,7 @@ import logging as logger
 from celery.result import AsyncResult
 
 from validator.adapters.celery import celery_worker
+from validator.config import config
 from validator.service_layer.report_handlers import remove_report
 
 
@@ -18,8 +19,16 @@ def retrieve_active_tasks(worker=None) -> dict:
     """
     worker = worker if worker else celery_worker
     inspector = worker.control.inspect()
+    active_tasks = inspector.active() or {}
 
-    return inspector.active()
+    worker_name_prefix = config.LAM_VALIDATOR_WORKER_NAME_PREFIX
+
+    filtered_tasks = {}
+    for worker_name, tasks in active_tasks.items():
+        if worker_name.startswith(worker_name_prefix):
+            filtered_tasks[worker_name] = tasks
+
+    return filtered_tasks
 
 
 def retrieve_task(task_id: str, worker=None) -> AsyncResult:

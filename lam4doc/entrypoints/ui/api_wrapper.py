@@ -274,7 +274,7 @@ def stop_running_task(task_id: str) -> tuple:
     """
     logger.debug(f'start stop task api call for task {task_id}')
     try:
-        response = requests.post(url=config.LAM_API_SERVICE + f'/tasks/{task_id}/stop',
+        response = requests.delete(url=config.LAM_API_SERVICE + f'/tasks/{task_id}/revoke',
                                 timeout=config.LAM_DEFAULT_TIMEOUT)
     except Timeout as exception:
         logger.exception(str(exception))
